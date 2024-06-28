@@ -15,6 +15,51 @@ To fill this out, please see: https://github.com/w3ctag/w3ctag.github.io/blob/ma
 ## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Introduction](#introduction)
+- [Goals](#goals)
+- [Non-goals](#non-goals)
+- [Use cases](#use-cases)
+  - [App with cross-origin popup](#app-with-cross-origin-popup)
+  - [App with 3rd party iframe](#app-with-3rd-party-iframe)
+  - [Embedded widget](#embedded-widget)
+- [Background: Process wide XS-Leaks and the crossOriginIsolated model](#background-process-wide-xs-leaks-and-the-crossoriginisolated-model)
+  - [Same-origin policy](#same-origin-policy)
+  - [Process wide XS-Leaks](#process-wide-xs-leaks)
+  - [The cross-origin isolation model](#the-cross-origin-isolation-model)
+  - [Cross origin isolation limits](#cross-origin-isolation-limits)
+    - [Deployability](#deployability)
+    - [Iframes getting access to COI-gated APIs](#iframes-getting-access-to-coi-gated-apis)
+  - [Out-of-process iframes evolving landscape](#out-of-process-iframes-evolving-landscape)
+- [Document-Isolation-Policy](#document-isolation-policy)
+  - [Document-Isolation-Policy header](#document-isolation-policy-header)
+  - [Interaction with COEP](#interaction-with-coep)
+  - [Interaction with COOP](#interaction-with-coop)
+  - [Interaction with Permission Policy](#interaction-with-permission-policy)
+  - [Interaction with the Origin-Agent-Cluster header](#interaction-with-the-origin-agent-cluster-header)
+  - [Impact on agent clustering](#impact-on-agent-clustering)
+    - [A note on SharedArrayBuffers and agent clusters](#a-note-on-sharedarraybuffers-and-agent-clusters)
+  - [Interaction with Fetch](#interaction-with-fetch)
+  - [Inheritance](#inheritance)
+  - [Interactions with workers](#interactions-with-workers)
+  - [Interaction with Isolated Web Apps](#interaction-with-isolated-web-apps)
+  - [Reporting](#reporting)
+  - [How this solution would solve the use cases](#how-this-solution-would-solve-the-use-cases)
+    - [App with cross-origin popup](#app-with-cross-origin-popup-1)
+    - [App with 3rd party iframe](#app-with-3rd-party-iframe-1)
+    - [Embedded widget](#embedded-widget-1)
+- [Considered alternatives](#considered-alternatives)
+  - [COOP restrict-properties](#coop-restrict-properties)
+  - [Origin-Agent-Cluster](#origin-agent-cluster)
+  - [Keeping the status quo](#keeping-the-status-quo)
+  - [Provide access to COI-gated APIs when full SiteIsolation is available](#provide-access-to-coi-gated-apis-when-full-siteisolation-is-available)
+  - [Browsing context group switch instead of agent cluster keying](#browsing-context-group-switch-instead-of-agent-cluster-keying)
+  - [Relying on COEP for the subresources checks](#relying-on-coep-for-the-subresources-checks)
+  - [Restricting the ability to use Document-Isolation-Policy for cross-origin iframes](#restricting-the-ability-to-use-document-isolation-policy-for-cross-origin-iframes)
+- [Stakeholder Feedback / Opposition](#stakeholder-feedback--opposition)
+- [References & acknowledgements](#references--acknowledgements)
+
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Introduction
