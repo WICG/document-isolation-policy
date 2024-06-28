@@ -3,14 +3,12 @@
 This is the repository for Document-Isolation-Policy. You're welcome to
 [contribute](CONTRIBUTING.md)!
 
-To fill this out, please see: https://github.com/w3ctag/w3ctag.github.io/blob/master/explainers.md
 ## Authors:
 
 - [Camille Lamy](https://github.com/camillelamy)
 
 ## Participate
-- [Issue tracker]
-- [Discussion forum]
+- [Issue tracker](https://github.com/WICG/document-isolation-policy/issues)
 
 ## Table of Contents
 
