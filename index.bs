@@ -80,18 +80,11 @@ urlPrefix: https://infra.spec.whatwg.org/; spec: Infra
 
 urlPrefix: https://html.spec.whatwg.org/C/; spec: html
   text: agent cluster key; type:dfn; url:agent-cluster-key
-  text: auxilliary browsing context; type:dfn; url:auxilliary-browsing-context
   text: browsing context; type:dfn; url:browsing-context
   text: browsing-context-group; type:dfn; url:browsing-context-group
   text: browsing context group; type:dfn; url:browsing-context-group
   text: browsing context group set; type:dfn; url:browsing-context-group-set
   text: Browsing context group switches due to cross-origin opener policy; type:dfn; url:browsing-context-group-switches-due-to-cross-origin-opener-policy
-  text: browsing context set; type:dfn; url:browsing context set
-  text: check if an access between two browsing contexts should be reported; type:dfn; url:coop-check-access-report
-  text: check if COOP values require a browsing context group switch; type: dfn; url: check-browsing-context-group-switch-coop-value
-  text: checking if COOP values require a browsing context group switch; type: dfn; url: check-browsing-context-group-switch-coop-value
-  text: check if enforcing report-only COOP would require a browsing context group switch; type: dfn; url: check-bcg-switch-report-only
-  text: checking if enforcing report-only COOP would require a browsing context group switch; type: dfn; url: check-bcg-switch-report-only
   text: COEP; type: dfn; url: coep
   text: COOP; type: dfn; url: cross-origin-opener-policies
   text: coop-enforcement-origin; type: dfn; url: coop-enforcement-origin
