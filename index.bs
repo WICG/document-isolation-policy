@@ -41,6 +41,14 @@ WPT Display: inline
     "title": "Spectre Attacks: Exploiting Speculative Execution"
   },
 
+  "explainer": {
+    "authors": [
+      "Camille Lamy"
+    ],
+    "href": "https://github.com/WICG/document-isolation-policy",
+    "title": "Document-Isolation-Policy explainer"
+  },
+
   "WhyCoopCoep": {
     "authors": [
       "Eiji Kitamura",
@@ -232,6 +240,7 @@ Introduction { #introduction }
 
 Recommended readings {#recommended-readings}
 --------------------
+- The [[explainer]] for Document-Isolation-Policy.
 - The [[Spectre]] vulnerability.
 - The [=Cross-Origin-Opener-Policy=] ([=COOP=]) section of the HTML spec.
 - The [=Cross-Origin-Embedder-Policy=] ([=COEP=]) section of the HTML spec.
