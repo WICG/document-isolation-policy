@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://github.com/WICG/document-isolation-policy" rel="canonical">
-  <meta content="f760b1ad77953895a14edf1b2cdbe9bbcc7bf701" name="document-revision">
+  <meta content="70965a0ed78a4f3bfcb1ad6bc1e38f37a39aa232" name="document-revision">
 <style>
 .monkey-patch {
     padding: .5em;
@@ -842,7 +842,7 @@ server’s explicit permission through the <a data-link-type="dfn" href="https:/
 '<a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#http-cross-origin-resource-policy" id="ref-for-http-cross-origin-resource-policy③">Cross-Origin-Resource-Policy</a>' header. The document is also assigned to a
 cross-origin isolated <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-agent-clusters" id="ref-for-sec-agent-clusters③">agent cluster</a>.</p>
     </ul>
-    <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="dip" data-noexport id="dip①">document isolation policy</dfn> consists of:</p>
+    <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="dip-struct" data-noexport id="dip-struct">document isolation policy</dfn> consists of:</p>
     <ul>
      <li data-md>
       <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="dip-struct-value" data-noexport id="dip-struct-value">value</dfn>, which is a <a data-link-type="dfn" href="#dip-value" id="ref-for-dip-value">document
@@ -858,7 +858,7 @@ isolation policy value</a>, initially "<a data-link-type="dfn" href="#dip-none" 
 initially the empty string.</p>
     </ul>
     <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="obtain-coi-key" data-noexport id="obtain-coi-key">obtain a cross-origin agent cluster isolation
-key</dfn> given null or a <a data-link-type="dfn" href="#dip①" id="ref-for-dip①">document isolation policy</a> <em>documentIsolationPolicy</em> and an <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#concept-origin" id="ref-for-concept-origin①">origin</a> <em>origin</em>:</p>
+key</dfn> given null or a <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct">document isolation policy</a> <em>documentIsolationPolicy</em> and an <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#concept-origin" id="ref-for-concept-origin①">origin</a> <em>origin</em>:</p>
     <ol>
      <li data-md>
       <p>If <em>documentIsolationPolicy</em> is null, return null.</p>
@@ -879,7 +879,7 @@ key</dfn> given null or a <a data-link-type="dfn" href="#dip①" id="ref-for-dip
     <h5 class="heading settled" data-level="2.1.2.1" id="dip-headers"><span class="secno">2.1.2.1. </span><span class="content">The headers</span><a class="self-link" href="#dip-headers"></a></h5>
     <p>The '<dfn data-dfn-type="dfn" data-lt="dip-header" data-noexport id="dip-header">Document-Isolation-Policy<a class="self-link" href="#dip-header"></a></dfn>' and
 '<dfn data-dfn-type="dfn" data-lt="dip-report-only-header" data-noexport id="dip-report-only-header">Document-Isolation-Policy-Report-Only<a class="self-link" href="#dip-report-only-header"></a></dfn>'
-HTTP response headers allow a server to declare a <a data-link-type="dfn" href="#dip①" id="ref-for-dip①①">document isolation
+HTTP response headers allow a server to declare a <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct①">document isolation
 policy</a> for a <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document" id="ref-for-concept-document">document</a>. These headers are <a data-link-type="dfn" href="https://httpwg.org/specs/rfc8941.html#specify" id="ref-for-specify">structured headers</a> whose values
 must be <a data-link-type="dfn" href="https://httpwg.org/specs/rfc8941.html#token" id="ref-for-token">token</a>.</p>
     <p>The valid <a data-link-type="dfn" href="https://httpwg.org/specs/rfc8941.html#token" id="ref-for-token①">token</a> values are the <a data-link-type="dfn" href="#dip-value" id="ref-for-dip-value②">document isolation policy
@@ -889,7 +889,7 @@ appropriate reporting endpoint.</p>
     <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="obtain-dip" data-noexport id="obtain-dip">obtain a document isolation policy</dfn> given a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response" id="ref-for-concept-response">response</a> <em>response</em> and an <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#environment" id="ref-for-environment">environment</a> <em>environment</em>:</p>
     <ol>
      <li data-md>
-      <p>Let <em>policy</em> be a new <a data-link-type="dfn" href="#dip①" id="ref-for-dip①②">document isolation policy</a>.</p>
+      <p>Let <em>policy</em> be a new <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct②">document isolation policy</a>.</p>
      <li data-md>
       <p>If <em>environment</em> is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#non-secure-context" id="ref-for-non-secure-context">non-secure context</a>, then return <em>policy</em>.</p>
      <li data-md>
@@ -925,13 +925,12 @@ appropriate reporting endpoint.</p>
    <div class="monkey-patch">
     <ul>
      <li data-md>
-      <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="policy-container-dip" data-noexport id="policy-container-dip">document isolation policy</dfn>, which is a <a data-link-type="dfn" href="#dip①" id="ref-for-dip①③">document isolation policy</a>. It is initially a new <a data-link-type="dfn" href="#dip①" id="ref-for-dip①④">document
-isolation policy</a>.</p>
+      <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="policy-container-dip" data-noexport id="policy-container-dip">document isolation policy</dfn>, which is a <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct③">document isolation policy</a>. It is initially a new <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct④">document isolation policy</a>.</p>
      <li data-md>
       <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="policy-container-coi-key" data-noexport id="policy-container-coi-key">agent cluster cross-origin isolation
 key</dfn>, which is null or an <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key①">agent cluster
 cross-origin isolation key</a>. It is initially null. This <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key②">agent cluster cross-origin isolation key</a> is based
-on the <a data-link-type="dfn" href="#dip①" id="ref-for-dip①⑤">document isolation policy</a> of the document. It overrides the <a data-link-type="dfn" href="#bcg-coi-key" id="ref-for-bcg-coi-key②">agent cluster cross-origin isolation key</a> stored in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#browsing-context-group" id="ref-for-browsing-context-group②">browsing context group</a>.</p>
+on the <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct⑤">document isolation policy</a> of the document. It overrides the <a data-link-type="dfn" href="#bcg-coi-key" id="ref-for-bcg-coi-key②">agent cluster cross-origin isolation key</a> stored in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#browsing-context-group" id="ref-for-browsing-context-group②">browsing context group</a>.</p>
     </ul>
    </div>
    <p>Add step 5 and 6 to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#clone-a-policy-container" id="ref-for-clone-a-policy-container">clone a policy container</a> algorithm:</p>
@@ -988,7 +987,7 @@ on the <a data-link-type="dfn" href="#dip①" id="ref-for-dip①⑤">document is
 cross-origin isolation key</dfn>, which is null or an <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key③">agent cluster cross-origin isolation key</a> . It is
 initially null. It is set by <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#cross-origin-opener-policies" id="ref-for-cross-origin-opener-policies④">Cross-Origin-Opener-Policy</a>, and is the default <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key④">agent cluster cross-origin isolation key</a> for
 documents inside the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#browsing-context-group" id="ref-for-browsing-context-group⑤">browsing context group</a>. However, it can be overriden by the <a data-link-type="dfn" href="#policy-container-coi-key" id="ref-for-policy-container-coi-key④">policy container’s agent cluster cross-origin
-isolation key</a> when a document has a <a data-link-type="dfn" href="#dip①" id="ref-for-dip①⑥">document isolation policy</a>.</p>
+isolation key</a> when a document has a <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct⑥">document isolation policy</a>.</p>
    </div>
    <h3 class="heading settled" data-level="2.3" id="dip-document-lifecycle"><span class="secno">2.3. </span><span class="content">Document lifecycle</span><a class="self-link" href="#dip-document-lifecycle"></a></h3>
    <h4 class="heading settled" data-level="2.3.1" id="dip-document-creation"><span class="secno">2.3.1. </span><span class="content">Shared document creation infrastructure</span><a class="self-link" href="#dip-document-creation"></a></h4>
@@ -1278,7 +1277,6 @@ string <em>destination</em>, and a boolean <em>reportOnly</em>, run these steps:
    <li><a href="#corp-check-blocked-coep-dip">corp-check-blocked-coep-dip</a><span>, in § 3.2</span>
    <li><a href="#corp-check-blocked-dip">corp-check-blocked-dip</a><span>, in § 3.2</span>
    <li><a href="#corp-check-result">corp-check-result</a><span>, in § 3.2</span>
-   <li><a href="#dip①">dip</a><span>, in § 2.1.2</span>
    <li><a href="#dip-header">dip-header</a><span>, in § 2.1.2.1</span>
    <li><a href="#dip-isolate-and-credentialless">dip-isolate-and-credentialless</a><span>, in § 2.1.2</span>
    <li><a href="#dip-isolate-and-require-corp">dip-isolate-and-require-corp</a><span>, in § 2.1.2</span>
@@ -1287,6 +1285,7 @@ string <em>destination</em>, and a boolean <em>reportOnly</em>, run these steps:
    <li><a href="#dip-report-only-endpoint">dip-report-only-endpoint</a><span>, in § 2.1.2</span>
    <li><a href="#dip-report-only-header">dip-report-only-header</a><span>, in § 2.1.2.1</span>
    <li><a href="#dip-report-only-value">dip-report-only-value</a><span>, in § 2.1.2</span>
+   <li><a href="#dip-struct">dip-struct</a><span>, in § 2.1.2</span>
    <li><a href="#dip-struct-value">dip-struct-value</a><span>, in § 2.1.2</span>
    <li><a href="#dip-value">dip-value</a><span>, in § 2.1.2</span>
    <li><a href="#document-isolation-policy-allows-credentials">Document-Isolation-Policy allows credentials</a><span>, in § 3.1</span>
@@ -1804,7 +1803,7 @@ window.dfnpanelData['dip-value'] = {"dfnID": "dip-value", "url": "#dip-value", "
 window.dfnpanelData['dip-none'] = {"dfnID": "dip-none", "url": "#dip-none", "dfnText": "none", "refSections": [{"refs": [{"id": "ref-for-dip-none"}, {"id": "ref-for-dip-none\u2460"}, {"id": "ref-for-dip-none\u2461"}], "title": "2.1.2. Document Isolation Policies"}, {"refs": [{"id": "ref-for-dip-none\u2462"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
 window.dfnpanelData['dip-isolate-and-require-corp'] = {"dfnID": "dip-isolate-and-require-corp", "url": "#dip-isolate-and-require-corp", "dfnText": "isolate-and-require-corp", "refSections": [{"refs": [{"id": "ref-for-dip-isolate-and-require-corp"}, {"id": "ref-for-dip-isolate-and-require-corp\u2460"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-isolate-and-require-corp\u2461"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
 window.dfnpanelData['dip-isolate-and-credentialless'] = {"dfnID": "dip-isolate-and-credentialless", "url": "#dip-isolate-and-credentialless", "dfnText": "isolate-and-credentialless", "refSections": [{"refs": [{"id": "ref-for-dip-isolate-and-credentialless"}, {"id": "ref-for-dip-isolate-and-credentialless\u2460"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-isolate-and-credentialless\u2461"}], "title": "3.1. Requests"}, {"refs": [{"id": "ref-for-dip-isolate-and-credentialless\u2462"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
-window.dfnpanelData['dip①'] = {"dfnID": "dip\u2460", "url": "#dip\u2460", "dfnText": "document isolation policy", "refSections": [{"refs": [{"id": "ref-for-dip\u2460"}], "title": "2.1.2. Document Isolation Policies"}, {"refs": [{"id": "ref-for-dip\u2460\u2460"}, {"id": "ref-for-dip\u2460\u2461"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip\u2460\u2462"}, {"id": "ref-for-dip\u2460\u2463"}, {"id": "ref-for-dip\u2460\u2464"}], "title": "2.1.3. Policy containers"}, {"refs": [{"id": "ref-for-dip\u2460\u2465"}], "title": "2.2.2. Grouping of browsing contexts"}], "external": false};
+window.dfnpanelData['dip-struct'] = {"dfnID": "dip-struct", "url": "#dip-struct", "dfnText": "document isolation policy", "refSections": [{"refs": [{"id": "ref-for-dip-struct"}], "title": "2.1.2. Document Isolation Policies"}, {"refs": [{"id": "ref-for-dip-struct\u2460"}, {"id": "ref-for-dip-struct\u2461"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-struct\u2462"}, {"id": "ref-for-dip-struct\u2463"}, {"id": "ref-for-dip-struct\u2464"}], "title": "2.1.3. Policy containers"}, {"refs": [{"id": "ref-for-dip-struct\u2465"}], "title": "2.2.2. Grouping of browsing contexts"}], "external": false};
 window.dfnpanelData['dip-struct-value'] = {"dfnID": "dip-struct-value", "url": "#dip-struct-value", "dfnText": "value", "refSections": [{"refs": [{"id": "ref-for-dip-struct-value"}], "title": "2.1.2. Document Isolation Policies"}, {"refs": [{"id": "ref-for-dip-struct-value\u2460"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-struct-value\u2461"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
 window.dfnpanelData['dip-reporting-endpoint'] = {"dfnID": "dip-reporting-endpoint", "url": "#dip-reporting-endpoint", "dfnText": "reporting endpoint", "refSections": [{"refs": [{"id": "ref-for-dip-reporting-endpoint"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-reporting-endpoint\u2460"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
 window.dfnpanelData['dip-report-only-value'] = {"dfnID": "dip-report-only-value", "url": "#dip-report-only-value", "dfnText": "report-only value", "refSections": [{"refs": [{"id": "ref-for-dip-report-only-value"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-report-only-value\u2460"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};

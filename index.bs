@@ -307,7 +307,7 @@ cross-origin resources without explicit permission from resource owners.
   '[=Cross-Origin-Resource-Policy=]' header. The document is also assigned to a
   cross-origin isolated [=agent cluster=].
 
-A <dfn lt="dip">document isolation policy</dfn> consists of:
+A <dfn lt="dip-struct">document isolation policy</dfn> consists of:
 * A <dfn lt="dip-struct-value">value</dfn>, which is a [=dip-value|document
   isolation policy value=], initially "[=dip-none|none=].
 * A <dfn lt="dip-reporting-endpoint">reporting endpoint</dfn>, initially the
@@ -319,7 +319,7 @@ A <dfn lt="dip">document isolation policy</dfn> consists of:
   initially the empty string.
 
 To <dfn lt="obtain-coi-key">obtain a cross-origin agent cluster isolation
-key</dfn> given null or a [=dip|document isolation policy=]
+key</dfn> given null or a [=dip-struct|document isolation policy=]
 *documentIsolationPolicy* and an [=origin=] *origin*:
 1. If *documentIsolationPolicy* is null, return null.
 2. If *documentIsolationPolicy*'s [=dip-struct-value|value=] is
@@ -335,7 +335,7 @@ key</dfn> given null or a [=dip|document isolation policy=]
 
 The '<dfn lt="dip-header">Document-Isolation-Policy</dfn>' and
 '<dfn lt="dip-report-only-header">Document-Isolation-Policy-Report-Only</dfn>'
-HTTP response headers allow a server to declare a [=dip|document isolation
+HTTP response headers allow a server to declare a [=dip-struct|document isolation
 policy=] for a [=document=]. These headers are [=structured headers=] whose values
 must be [=token=].
 
@@ -347,7 +347,7 @@ appropriate reporting endpoint.
 To <dfn lt="obtain-dip">obtain a document isolation policy</dfn> given a
 [=response=] *response* and an [=environment=] *environment*:
 
-1. Let *policy* be a new [=dip|document isolation policy=].
+1. Let *policy* be a new [=dip-struct|document isolation policy=].
 2. If *environment* is a [=non-secure context=], then return *policy*.
 3. Let *parsedItem* be the result of [=getting a structured field value=] with
    `Document-Isolation-Policy` and "item" from *response*'s [=header list=].
@@ -382,14 +382,14 @@ Add the following members to the [=policy container=] struct:
 <div class="monkey-patch">
 
 * A <dfn lt="policy-container-dip">document isolation policy</dfn>, which is a
-  [=dip|document isolation policy=]. It is initially a new [=dip|document
-  isolation policy=].
+  [=dip-struct|document isolation policy=]. It is initially a new
+  [=dip-struct|document isolation policy=].
 
 * An <dfn lt="policy-container-coi-key">agent cluster cross-origin isolation
   key</dfn>, which is null or an [=coi-agent-cluster-key|agent cluster
   cross-origin isolation key=]. It is initially null. This
   [=coi-agent-cluster-key|agent cluster cross-origin isolation key=] is based
-  on the [=dip|document isolation policy=] of the document. It overrides the 
+  on the [=dip-struct|document isolation policy=] of the document. It overrides the 
   [=bcg-coi-key|agent cluster cross-origin isolation key=] stored in the
   [=browsing context group=].
 
@@ -477,7 +477,7 @@ initially null. It is set by [=Cross-Origin-Opener-Policy=], and is the default
 [=coi-agent-cluster-key|agent cluster cross-origin isolation key=] for
 documents inside the [=browsing context group=]. However, it can be overriden by the 
 [=policy-container-coi-key|policy container's agent cluster cross-origin
-isolation key=] when a document has a [=dip|document isolation policy=].
+isolation key=] when a document has a [=dip-struct|document isolation policy=].
 
 </div>
 
