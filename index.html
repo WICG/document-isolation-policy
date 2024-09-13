@@ -1,0 +1,2021 @@
+<!doctype html><html lang="en">
+ <head>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+  <title>Document-Isolation-Policy</title>
+  <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+  <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
+  <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
+  <link href="https://github.com/WICG/document-isolation-policy" rel="canonical">
+  <meta content="752d95d781513689fd5175cd3315767713ad6b1f" name="document-revision">
+<style>
+.monkey-patch {
+    padding: .5em;
+    border: thin solid #ddd;
+    border: thin solid 1px;
+    border-radius: .5em;
+    margin: .5em calc(-0.5em - 1px);
+    background-color: rgba(255, 255, 0, 0.03);
+    backdrop-filter: blur(5px);
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.05);
+}
+
+.brief {
+  line-height: 10%;
+}
+
+.customHighlight {
+  padding-top:9px ;
+  padding-bottom:9px ;
+  background-color: rgba(255,255,0,0.3)
+}
+
+</style>
+<style>/* Boilerplate: style-autolinks */
+.css.css, .property.property, .descriptor.descriptor {
+    color: var(--a-normal-text);
+    font-size: inherit;
+    font-family: inherit;
+}
+.css::before, .property::before, .descriptor::before {
+    content: "‘";
+}
+.css::after, .property::after, .descriptor::after {
+    content: "’";
+}
+.property, .descriptor {
+    /* Don't wrap property and descriptor names */
+    white-space: nowrap;
+}
+.type { /* CSS value <type> */
+    font-style: italic;
+}
+pre .property::before, pre .property::after {
+    content: "";
+}
+[data-link-type="property"]::before,
+[data-link-type="propdesc"]::before,
+[data-link-type="descriptor"]::before,
+[data-link-type="value"]::before,
+[data-link-type="function"]::before,
+[data-link-type="at-rule"]::before,
+[data-link-type="selector"]::before,
+[data-link-type="maybe"]::before {
+    content: "‘";
+}
+[data-link-type="property"]::after,
+[data-link-type="propdesc"]::after,
+[data-link-type="descriptor"]::after,
+[data-link-type="value"]::after,
+[data-link-type="function"]::after,
+[data-link-type="at-rule"]::after,
+[data-link-type="selector"]::after,
+[data-link-type="maybe"]::after {
+    content: "’";
+}
+
+[data-link-type].production::before,
+[data-link-type].production::after,
+.prod [data-link-type]::before,
+.prod [data-link-type]::after {
+    content: "";
+}
+
+[data-link-type=element],
+[data-link-type=element-attr] {
+    font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    font-size: .9em;
+}
+[data-link-type=element]::before { content: "<" }
+[data-link-type=element]::after  { content: ">" }
+
+[data-link-type=biblio] {
+    white-space: pre;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --selflink-text: black;
+        --selflink-bg: silver;
+        --selflink-hover-text: white;
+    }
+}
+</style>
+<style>/* Boilerplate: style-colors */
+
+/* Any --*-text not paired with a --*-bg is assumed to have a transparent bg */
+:root {
+    color-scheme: light dark;
+
+    --text: black;
+    --bg: white;
+
+    --unofficial-watermark: url(https://www.w3.org/StyleSheets/TR/2016/logos/UD-watermark);
+
+    --logo-bg: #1a5e9a;
+    --logo-active-bg: #c00;
+    --logo-text: white;
+
+    --tocnav-normal-text: #707070;
+    --tocnav-normal-bg: var(--bg);
+    --tocnav-hover-text: var(--tocnav-normal-text);
+    --tocnav-hover-bg: #f8f8f8;
+    --tocnav-active-text: #c00;
+    --tocnav-active-bg: var(--tocnav-normal-bg);
+
+    --tocsidebar-text: var(--text);
+    --tocsidebar-bg: #f7f8f9;
+    --tocsidebar-shadow: rgba(0,0,0,.1);
+    --tocsidebar-heading-text: hsla(203,20%,40%,.7);
+
+    --toclink-text: var(--text);
+    --toclink-underline: #3980b5;
+    --toclink-visited-text: var(--toclink-text);
+    --toclink-visited-underline: #054572;
+
+    --heading-text: #005a9c;
+
+    --hr-text: var(--text);
+
+    --algo-border: #def;
+
+    --del-text: red;
+    --del-bg: transparent;
+    --ins-text: #080;
+    --ins-bg: transparent;
+
+    --a-normal-text: #034575;
+    --a-normal-underline: #bbb;
+    --a-visited-text: var(--a-normal-text);
+    --a-visited-underline: #707070;
+    --a-hover-bg: rgba(75%, 75%, 75%, .25);
+    --a-active-text: #c00;
+    --a-active-underline: #c00;
+
+    --blockquote-border: silver;
+    --blockquote-bg: transparent;
+    --blockquote-text: currentcolor;
+
+    --issue-border: #e05252;
+    --issue-bg: #fbe9e9;
+    --issue-text: var(--text);
+    --issueheading-text: #831616;
+
+    --example-border: #e0cb52;
+    --example-bg: #fcfaee;
+    --example-text: var(--text);
+    --exampleheading-text: #574b0f;
+
+    --note-border: #52e052;
+    --note-bg: #e9fbe9;
+    --note-text: var(--text);
+    --noteheading-text: hsl(120, 70%, 30%);
+    --notesummary-underline: silver;
+
+    --assertion-border: #aaa;
+    --assertion-bg: #eee;
+    --assertion-text: black;
+
+    --advisement-border: orange;
+    --advisement-bg: #fec;
+    --advisement-text: var(--text);
+    --advisementheading-text: #b35f00;
+
+    --warning-border: red;
+    --warning-bg: hsla(40,100%,50%,0.95);
+    --warning-text: var(--text);
+
+    --amendment-border: #330099;
+    --amendment-bg: #F5F0FF;
+    --amendment-text: var(--text);
+    --amendmentheading-text: #220066;
+
+    --def-border: #8ccbf2;
+    --def-bg: #def;
+    --def-text: var(--text);
+    --defrow-border: #bbd7e9;
+
+    --datacell-border: silver;
+
+    --indexinfo-text: #707070;
+
+    --indextable-hover-text: black;
+    --indextable-hover-bg: #f7f8f9;
+
+    --outdatedspec-bg: rgba(0, 0, 0, .5);
+    --outdatedspec-text: black;
+    --outdated-bg: maroon;
+    --outdated-text: white;
+    --outdated-shadow: red;
+
+    --editedrec-bg: darkorange;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text: #ddd;
+        --bg: black;
+
+        --unofficial-watermark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cg fill='%23100808' transform='translate(200 200) rotate(-45) translate(-200 -200)' stroke='%23100808' stroke-width='3'%3E%3Ctext x='50%25' y='220' style='font: bold 70px sans-serif; text-anchor: middle; letter-spacing: 6px;'%3EUNOFFICIAL%3C/text%3E%3Ctext x='50%25' y='305' style='font: bold 70px sans-serif; text-anchor: middle; letter-spacing: 6px;'%3EDRAFT%3C/text%3E%3C/g%3E%3C/svg%3E");
+
+        --logo-bg: #1a5e9a;
+        --logo-active-bg: #c00;
+        --logo-text: white;
+
+        --tocnav-normal-text: #999;
+        --tocnav-normal-bg: var(--bg);
+        --tocnav-hover-text: var(--tocnav-normal-text);
+        --tocnav-hover-bg: #080808;
+        --tocnav-active-text: #f44;
+        --tocnav-active-bg: var(--tocnav-normal-bg);
+
+        --tocsidebar-text: var(--text);
+        --tocsidebar-bg: #080808;
+        --tocsidebar-shadow: rgba(255,255,255,.1);
+        --tocsidebar-heading-text: hsla(203,20%,40%,.7);
+
+        --toclink-text: var(--text);
+        --toclink-underline: #6af;
+        --toclink-visited-text: var(--toclink-text);
+        --toclink-visited-underline: #054572;
+
+        --heading-text: #8af;
+
+        --hr-text: var(--text);
+
+        --algo-border: #456;
+
+        --del-text: #f44;
+        --del-bg: transparent;
+        --ins-text: #4a4;
+        --ins-bg: transparent;
+
+        --a-normal-text: #6af;
+        --a-normal-underline: #555;
+        --a-visited-text: var(--a-normal-text);
+        --a-visited-underline: var(--a-normal-underline);
+        --a-hover-bg: rgba(25%, 25%, 25%, .2);
+        --a-active-text: #f44;
+        --a-active-underline: var(--a-active-text);
+
+        --borderedblock-bg: rgba(255, 255, 255, .05);
+
+        --blockquote-border: silver;
+        --blockquote-bg: var(--borderedblock-bg);
+        --blockquote-text: currentcolor;
+
+        --issue-border: #e05252;
+        --issue-bg: var(--borderedblock-bg);
+        --issue-text: var(--text);
+        --issueheading-text: hsl(0deg, 70%, 70%);
+
+        --example-border: hsl(50deg, 90%, 60%);
+        --example-bg: var(--borderedblock-bg);
+        --example-text: var(--text);
+        --exampleheading-text: hsl(50deg, 70%, 70%);
+
+        --note-border: hsl(120deg, 100%, 35%);
+        --note-bg: var(--borderedblock-bg);
+        --note-text: var(--text);
+        --noteheading-text: hsl(120, 70%, 70%);
+        --notesummary-underline: silver;
+
+        --assertion-border: #444;
+        --assertion-bg: var(--borderedblock-bg);
+        --assertion-text: var(--text);
+
+        --advisement-border: orange;
+        --advisement-bg: #222218;
+        --advisement-text: var(--text);
+        --advisementheading-text: #f84;
+
+        --warning-border: red;
+        --warning-bg: hsla(40,100%,20%,0.95);
+        --warning-text: var(--text);
+
+        --amendment-border: #330099;
+        --amendment-bg: #080010;
+        --amendment-text: var(--text);
+        --amendmentheading-text: #cc00ff;
+
+        --def-border: #8ccbf2;
+        --def-bg: #080818;
+        --def-text: var(--text);
+        --defrow-border: #136;
+
+        --datacell-border: silver;
+
+        --indexinfo-text: #aaa;
+
+        --indextable-hover-text: var(--text);
+        --indextable-hover-bg: #181818;
+
+        --outdatedspec-bg: rgba(255, 255, 255, .5);
+        --outdatedspec-text: black;
+        --outdated-bg: maroon;
+        --outdated-text: white;
+        --outdated-shadow: red;
+
+        --editedrec-bg: darkorange;
+    }
+    /* In case a transparent-bg image doesn't expect to be on a dark bg,
+       which is quite common in practice... */
+    img { background: white; }
+}
+</style>
+<style>/* Boilerplate: style-counters */
+body {
+    counter-reset: example figure issue;
+}
+.issue {
+    counter-increment: issue;
+}
+.issue:not(.no-marker)::before {
+    content: "Issue " counter(issue);
+}
+
+.example {
+    counter-increment: example;
+}
+.example:not(.no-marker)::before {
+    content: "Example " counter(example);
+}
+.invalid.example:not(.no-marker)::before,
+.illegal.example:not(.no-marker)::before {
+    content: "Invalid Example" counter(example);
+}
+
+figcaption {
+    counter-increment: figure;
+}
+figcaption:not(.no-marker)::before {
+    content: "Figure " counter(figure) " ";
+}
+</style>
+<style>/* Boilerplate: style-dfn-panel */
+:root {
+    --dfnpanel-bg: #ddd;
+    --dfnpanel-text: var(--text);
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --dfnpanel-bg: #222;
+        --dfnpanel-text: var(--text);
+    }
+}
+.dfn-panel {
+    position: absolute;
+    z-index: 35;
+    width: 20em;
+    width: 300px;
+    height: auto;
+    max-height: 500px;
+    overflow: auto;
+    padding: 0.5em 0.75em;
+    font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
+    background: var(--dfnpanel-bg);
+    color: var(--dfnpanel-text);
+    border: outset 0.2em;
+    white-space: normal; /* in case it's moved into a pre */
+}
+.dfn-panel:not(.on) { display: none; }
+.dfn-panel * { margin: 0; padding: 0; text-indent: 0; }
+.dfn-panel > b { display: block; }
+.dfn-panel a { color: var(--dfnpanel-text); }
+.dfn-panel a:not(:hover) { text-decoration: none !important; border-bottom: none !important; }
+.dfn-panel > b + b { margin-top: 0.25em; }
+.dfn-panel ul { padding: 0 0 0 1em; list-style: none; }
+.dfn-panel li a {
+    white-space: pre;
+    display: inline-block;
+    max-width: calc(300px - 1.5em - 1em);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dfn-panel.activated {
+    display: inline-block;
+    position: fixed;
+    left: .5em;
+    bottom: 2em;
+    margin: 0 auto;
+    max-width: calc(100vw - 1.5em - .4em - .5em);
+    max-height: 30vh;
+}
+
+.dfn-paneled[role="button"] { cursor: pointer; }
+</style>
+<style>/* Boilerplate: style-dfn-panel */
+:root {
+    --dfnpanel-bg: #ddd;
+    --dfnpanel-text: var(--text);
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --dfnpanel-bg: #222;
+        --dfnpanel-text: var(--text);
+    }
+}
+.dfn-panel {
+    position: absolute;
+    z-index: 35;
+    width: 20em;
+    width: 300px;
+    height: auto;
+    max-height: 500px;
+    overflow: auto;
+    padding: 0.5em 0.75em;
+    font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
+    background: var(--dfnpanel-bg);
+    color: var(--dfnpanel-text);
+    border: outset 0.2em;
+    white-space: normal; /* in case it's moved into a pre */
+}
+.dfn-panel:not(.on) { display: none; }
+.dfn-panel * { margin: 0; padding: 0; text-indent: 0; }
+.dfn-panel > b { display: block; }
+.dfn-panel a { color: var(--dfnpanel-text); }
+.dfn-panel a:not(:hover) { text-decoration: none !important; border-bottom: none !important; }
+.dfn-panel > b + b { margin-top: 0.25em; }
+.dfn-panel ul { padding: 0 0 0 1em; list-style: none; }
+.dfn-panel li a {
+    white-space: pre;
+    display: inline-block;
+    max-width: calc(300px - 1.5em - 1em);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dfn-panel.activated {
+    display: inline-block;
+    position: fixed;
+    left: .5em;
+    bottom: 2em;
+    margin: 0 auto;
+    max-width: calc(100vw - 1.5em - .4em - .5em);
+    max-height: 30vh;
+}
+
+.dfn-paneled[role="button"] { cursor: pointer; }
+</style>
+<style>/* Boilerplate: style-issues */
+a[href].issue-return {
+    float: right;
+    float: inline-end;
+    color: var(--issueheading-text);
+    font-weight: bold;
+    text-decoration: none;
+}
+</style>
+<style>/* Boilerplate: style-md-lists */
+/* This is a weird hack for me not yet following the commonmark spec
+   regarding paragraph and lists. */
+[data-md] > :first-child {
+    margin-top: 0;
+}
+[data-md] > :last-child {
+    margin-bottom: 0;
+}
+</style>
+<style>/* Boilerplate: style-selflinks */
+
+:root {
+    --selflink-text: white;
+    --selflink-bg: gray;
+    --selflink-hover-text: black;
+}
+.heading, .issue, .note, .example, li, dt {
+    position: relative;
+}
+a.self-link {
+    position: absolute;
+    top: 0;
+    left: calc(-1 * (3.5rem - 26px));
+    width: calc(3.5rem - 26px);
+    height: 2em;
+    text-align: center;
+    border: none;
+    transition: opacity .2s;
+    opacity: .5;
+}
+a.self-link:hover {
+    opacity: 1;
+}
+.heading > a.self-link {
+    font-size: 83%;
+}
+.example > a.self-link,
+.note > a.self-link,
+.issue > a.self-link {
+    /* These blocks are overflow:auto, so positioning outside
+       doesn't work. */
+    left: auto;
+    right: 0;
+}
+li > a.self-link {
+    left: calc(-1 * (3.5rem - 26px) - 2em);
+}
+dfn > a.self-link {
+    top: auto;
+    left: auto;
+    opacity: 0;
+    width: 1.5em;
+    height: 1.5em;
+    background: var(--selflink-bg);
+    color: var(--selflink-text);
+    font-style: normal;
+    transition: opacity .2s, background-color .2s, color .2s;
+}
+dfn:hover > a.self-link {
+    opacity: 1;
+}
+dfn > a.self-link:hover {
+    color: var(--selflink-hover-text);
+}
+
+a.self-link::before            { content: "¶"; }
+.heading > a.self-link::before { content: "§"; }
+dfn > a.self-link::before      { content: "#"; }
+</style>
+<style>/* Boilerplate: style-wpt */
+:root {
+    --wpt-border: hsl(0, 0%, 60%);
+    --wpt-bg: hsl(0, 0%, 95%);
+    --wpt-text: var(--text);
+    --wptheading-text: hsl(0, 0%, 30%);
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --wpt-border: hsl(0, 0%, 30%);
+        --wpt-bg: var(--borderedblock-bg);
+        --wpt-text: var(--text);
+        --wptheading-text: hsl(0, 0%, 60%);
+    }
+}
+.wpt-tests-block {
+    list-style: none;
+    border-left: .5em solid var(--wpt-border);
+    background: var(--wpt-bg);
+    color: var(--wpt-text);
+    margin: 1em auto;
+    padding: .5em;
+}
+.wpt-tests-block summary {
+    color: var(--wptheading-text);
+    font-weight: normal;
+    text-transform: uppercase;
+}
+.wpt-tests-block summary::marker{
+    color: var(--wpt-border);
+}
+.wpt-tests-block summary:hover::marker{
+    color: var(--wpt-text);
+}
+/*
+   The only content  of a wpt test block in its closed state is the <summary>,
+   which contains the word TESTS,
+   and that is absolutely positioned.
+   In that closed state, wpt test blocks are styled
+   to have a top margin whose height is exactly equal
+   to the height of the absolutely positioned <summary>,
+   and no other background/padding/margin/border.
+   The wpt test block elements will therefore allow the maring
+   of the previous/next block elements
+   to collapse through them;
+   if this combined margin would be larger than its own top margin,
+   it stays as is,
+   and therefore the pre-existing vertical rhythm of the document is undisturbed.
+   If that combined margin would be smaller, it is grown to that size.
+   This means that the wpt test block ensures
+   that there's always enough vertical space to insert the summary,
+   without adding more than is needed.
+*/
+.wpt-tests-block:not([open]){
+    padding: 0;
+    border: none;
+    background: none;
+    font-size: 0.75em;
+    line-height: 1;
+    position: relative;
+    margin: 1em 0 0;
+}
+.wpt-tests-block:not([open]) summary {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+/*
+   It is possible that both the last child of a block element
+   and the block element itself
+   would be annotated with a <wpt> block each.
+   If the block element has a padding or a border,
+   that's fine, but otherwise
+   the bottom margin of the block and of its last child would collapse
+   and both <wpt> elements would overlap, being both placed there.
+   To avoid that, add 1px of padding to the <wpt> element annotating the last child
+   to prevent the bottom margin of the block and of its last child from collapsing
+   (and as much negative margin,
+   as wel only want to prevent margin collapsing,
+   but are not trying to actually take more space).
+*/
+.wpt-tests-block:not([open]):last-child {
+    padding-bottom: 1px;
+    margin-bottom: -1px;
+}
+/*
+   Exception to the previous rule:
+   don't do that in non-last list items,
+   because it's not necessary,
+   and would therefore consume more space than strictly needed.
+   Lists must have list items as children, not <wpt> elements,
+   so a <wpt> element cannot be a sibling of a list item,
+   and the collision that the previous rule avoids cannot happen.
+*/
+li:not(:last-child) > .wpt-tests-block:not([open]):last-child,
+dd:not(:last-child) > .wpt-tests-block:not([open]):last-child {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+.wpt-tests-block:not([open]):not(:hover){
+    opacity: 0.5;
+}
+.wpt-tests-list {
+    list-style: none;
+    display: grid;
+    margin: 0;
+    padding: 0;
+    grid-template-columns: 1fr max-content auto auto;
+    grid-column-gap: .5em;
+}
+.wpt-tests-block hr:last-child {
+    display: none;
+}
+.wpt-test {
+    display: contents;
+}
+.wpt-test > a {
+    text-decoration: underline;
+    border: none;
+}
+.wpt-test > .wpt-name { grid-column: 1; }
+.wpt-test > .wpt-results { grid-column: 2; }
+.wpt-test > .wpt-live { grid-column: 3; }
+.wpt-test > .wpt-source { grid-column: 4; }
+
+.wpt-test > .wpt-results {
+    display: flex;
+    gap: .1em;
+}
+.wpt-test .wpt-result {
+    display: inline-block;
+    height: 1em;
+    width: 1em;
+    border-radius: 50%;
+    position: relative;
+}
+</style>
+ <body class="h-entry">
+  <div class="head">
+   <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
+   <h1 class="p-name no-ref" id="title">Document-Isolation-Policy</h1>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2024-09-13">13 September 2024</time></p>
+   <div data-fill-with="spec-metadata">
+    <dl>
+     <dt>This version:
+     <dd><a class="u-url" href="https://github.com/WICG/document-isolation-policy">https://github.com/WICG/document-isolation-policy</a>
+     <dt>Issue Tracking:
+     <dd><a href="https://github.com/WICG/document-isolation-policy/issues/">GitHub</a>
+     <dt class="editor">Editor:
+     <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:clamy@google.com">Camille Lamy</a> (<span class="p-org org">Google</span>)
+    </dl>
+   </div>
+   <div data-fill-with="warning"></div>
+   <p class="copyright" data-fill-with="copyright">©2024, Google, Inc. All rights reserved.</p>
+   <hr title="Separator for header">
+  </div>
+  <div class="p-summary" data-fill-with="abstract">
+   <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
+   <p>This proposal explores a new header, "Document-Isolation-Policy", that
+
+  enables crossOriginIsolation for the document, without relying on COOP and
+  COEP. In turns, this gives access to COI-gated APIs such as SharedArrayBuffers.</p>
+  </div>
+  <div data-fill-with="at-risk"></div>
+  <h2 class="no-num no-toc no-ref heading settled" id="status"><span class="content">Status of this document</span></h2>
+  <div data-fill-with="status">
+   <p> This specification was published by the <a href="https://www.w3.org/community/wicg/">Web Platform Incubator Community Group</a>.
+  It is not a W3C Standard nor is it on the W3C Standards Track.
+
+  Please note that under the <a href="https://www.w3.org/community/about/agreements/cla/">W3C Community Contributor License Agreement (CLA)</a> there is a limited opt-out and other conditions apply.
+
+  Learn more about <a href="http://www.w3.org/community/">W3C Community and Business Groups</a>. </p>
+   <p></p>
+  </div>
+  <div data-fill-with="at-risk"></div>
+  <nav data-fill-with="table-of-contents" id="toc">
+   <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
+   <ol class="toc" role="directory">
+    <li>
+     <a href="#introduction"><span class="secno">1</span> <span class="content">Introduction</span></a>
+     <ol class="toc">
+      <li><a href="#recommended-readings"><span class="secno">1.1</span> <span class="content">Recommended readings</span></a>
+     </ol>
+    <li>
+     <a href="#dip-html"><span class="secno">2</span> <span class="content">Integration with HMTL</span></a>
+     <ol class="toc">
+      <li>
+       <a href="#dip-supporting-concepts"><span class="secno">2.1</span> <span class="content">Supporting concepts when loading web pages</span></a>
+       <ol class="toc">
+        <li>
+         <a href="#dip"><span class="secno">2.1.1</span> <span class="content">Cross-origin-opener-policies</span></a>
+         <ol class="toc">
+          <li><a href="#dip-bcg-switch"><span class="secno">2.1.1.1</span> <span class="content">Browsing context group switches due to cross-origin opener policy</span></a>
+         </ol>
+        <li>
+         <a href="#dip-dip"><span class="secno">2.1.2</span> <span class="content">Document Isolation Policies</span></a>
+         <ol class="toc">
+          <li><a href="#dip-headers"><span class="secno">2.1.2.1</span> <span class="content">The headers</span></a>
+         </ol>
+        <li><a href="#dip-policy-containers"><span class="secno">2.1.3</span> <span class="content">Policy containers</span></a>
+       </ol>
+      <li>
+       <a href="#dip-browsing-contexts"><span class="secno">2.2</span> <span class="content">Browsing contexts</span></a>
+       <ol class="toc">
+        <li><a href="#dip-bc"><span class="secno">2.2.1</span> <span class="content">Browsing contexts</span></a>
+        <li><a href="#dip-grouping-of-browsing-contexts"><span class="secno">2.2.2</span> <span class="content">Grouping of browsing contexts</span></a>
+       </ol>
+      <li>
+       <a href="#dip-document-lifecycle"><span class="secno">2.3</span> <span class="content">Document lifecycle</span></a>
+       <ol class="toc">
+        <li><a href="#dip-document-creation"><span class="secno">2.3.1</span> <span class="content">Shared document creation infrastructure</span></a>
+       </ol>
+      <li><a href="#dip-agent-clusters"><span class="secno">2.4</span> <span class="content">Agents and agent clusters</span></a>
+     </ol>
+    <li>
+     <a href="#dip-fetch"><span class="secno">3</span> <span class="content">Integration with Fetch</span></a>
+     <ol class="toc">
+      <li><a href="#dip-requests"><span class="secno">3.1</span> <span class="content">Requests</span></a>
+      <li><a href="#dip-corp"><span class="secno">3.2</span> <span class="content">'Cross-Origin-Resource-Policy' header</span></a>
+      <li><a href="#dip-http-fetch"><span class="secno">3.3</span> <span class="content">HTTP-network-or-cache fetch</span></a>
+     </ol>
+    <li>
+     <a href="#index"><span class="secno"></span> <span class="content">Index</span></a>
+     <ol class="toc">
+      <li><a href="#index-defined-here"><span class="secno"></span> <span class="content">Terms defined by this specification</span></a>
+      <li><a href="#index-defined-elsewhere"><span class="secno"></span> <span class="content">Terms defined by reference</span></a>
+     </ol>
+    <li>
+     <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
+     <ol class="toc">
+      <li><a href="#normative"><span class="secno"></span> <span class="content">Normative References</span></a>
+      <li><a href="#informative"><span class="secno"></span> <span class="content">Informative References</span></a>
+     </ol>
+   </ol>
+  </nav>
+  <main>
+   <h2 class="heading settled" data-level="1" id="introduction"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#introduction"></a></h2>
+   <p><em>This section is not normative.</em></p>
+   <h3 class="heading settled" data-level="1.1" id="recommended-readings"><span class="secno">1.1. </span><span class="content">Recommended readings</span><a class="self-link" href="#recommended-readings"></a></h3>
+   <ul>
+    <li data-md>
+     <p>The <a data-link-type="biblio" href="#biblio-explainer" title="Document-Isolation-Policy explainer">[explainer]</a> for Document-Isolation-Policy.</p>
+    <li data-md>
+     <p>The <a data-link-type="biblio" href="#biblio-spectre" title="Spectre Attacks: Exploiting Speculative Execution">[Spectre]</a> vulnerability.</p>
+    <li data-md>
+     <p>The <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#cross-origin-opener-policies" id="ref-for-cross-origin-opener-policies">Cross-Origin-Opener-Policy</a> (<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#cross-origin-opener-policies" id="ref-for-cross-origin-opener-policies①">COOP</a>) section of the HTML spec.</p>
+    <li data-md>
+     <p>The <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#coep" id="ref-for-coep">Cross-Origin-Embedder-Policy</a> (<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#coep" id="ref-for-coep①">COEP</a>) section of the HTML spec.</p>
+    <li data-md>
+     <p>How and why <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#cross-origin-opener-policies" id="ref-for-cross-origin-opener-policies②">Cross-Origin-Opener-Policy</a> (<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#cross-origin-opener-policies" id="ref-for-cross-origin-opener-policies③">COOP</a>) and <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#coep" id="ref-for-coep②">Cross-Origin-Embedder-Policy</a> (<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#coep" id="ref-for-coep③">COEP</a>) are granting the <a href="concept-settings-object-cross-origin-isolated-capability">crossOriginIsolated</a> capability. See <a data-link-type="biblio" href="#biblio-whycoopcoep" title="Why you need &quot;cross-origin isolated&quot; for powerful features">[WhyCoopCoep]</a>.</p>
+   </ul>
+   <h2 class="heading settled" data-level="2" id="dip-html"><span class="secno">2. </span><span class="content">Integration with HMTL</span><a class="self-link" href="#dip-html"></a></h2>
+   <p>This section defines a monkey-patch over <a data-link-type="biblio" href="#biblio-html" title="HTML Standard">[HTML]</a>.</p>
+   <h3 class="heading settled" data-level="2.1" id="dip-supporting-concepts"><span class="secno">2.1. </span><span class="content">Supporting concepts when loading web pages</span><a class="self-link" href="#dip-supporting-concepts"></a></h3>
+   <h4 class="heading settled" data-level="2.1.1" id="dip"><span class="secno">2.1.1. </span><span class="content">Cross-origin-opener-policies</span><a class="self-link" href="#dip"></a></h4>
+   <p>Modify the definition of "<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#coop-same-origin-plus-coep" id="ref-for-coop-same-origin-plus-coep">same-origin-plus-coep</a>":</p>
+   <div class="monkey-patch">
+    <p>This behaves the same as "same-origin", with the addition that it sets the
+(new) <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#top-level-browsing-context" id="ref-for-top-level-browsing-context">top-level browsing context</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#browsing-context-group" id="ref-for-browsing-context-group">group</a>'s <a data-link-type="dfn" href="#bcg-coi-key" id="ref-for-bcg-coi-key">agent cluster cross-origin isolation key</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#bcg-cross-origin-isolation" id="ref-for-bcg-cross-origin-isolation">cross-origin
+isolation mode</a> to one of "<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#cross-origin-isolation-logical" id="ref-for-cross-origin-isolation-logical">logical</a>" or "<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#cross-origin-isolation-concrete" id="ref-for-cross-origin-isolation-concrete">concrete</a>".</p>
+   </div>
+   <h5 class="heading settled" data-level="2.1.1.1" id="dip-bcg-switch"><span class="secno">2.1.1.1. </span><span class="content">Browsing context group switches due to cross-origin opener policy</span><a class="self-link" href="#dip-bcg-switch"></a></h5>
+   <p>Modify step 4 of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#obtain-browsing-context-navigation" id="ref-for-obtain-browsing-context-navigation">obtain a browsing context to use for a navigation response</a> algorithm:</p>
+   <div class="monkey-patch">
+    <ol start="4">
+     <li data-md>
+      <p>If <em>navigationCOOP</em>'s value is "<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#coop-same-origin-plus-coep" id="ref-for-coop-same-origin-plus-coep①">same-origin-plus-COEP</a>", then:</p>
+      <ol>
+       <li data-md>
+        <p>Let <em>crossOriginIsolationMode</em> be either "<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#cross-origin-isolation-logical" id="ref-for-cross-origin-isolation-logical①">logical</a>" or "<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#cross-origin-isolation-concrete" id="ref-for-cross-origin-isolation-concrete①">concrete</a>".
+ The choice of which is implementation-defined.</p>
+       <li data-md>
+        <p>Set <em>newBrowsingContext</em>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#browsing-context-group" id="ref-for-browsing-context-group①">group</a>'s <a data-link-type="dfn" href="#bcg-coi-key" id="ref-for-bcg-coi-key①">agent cluster cross-origin isolation key</a> to
+ {<em>coopEnforcementResult</em>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#concept-origin" id="ref-for-concept-origin">origin</a>, <em>crossOriginIsolationMode</em>}.</p>
+      </ol>
+    </ol>
+   </div>
+   <h4 class="heading settled" data-level="2.1.2" id="dip-dip"><span class="secno">2.1.2. </span><span class="content">Document Isolation Policies</span><a class="self-link" href="#dip-dip"></a></h4>
+   <p>Add a new subsection to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#loading-web-pages-supporting-concepts" id="ref-for-loading-web-pages-supporting-concepts">loading web pages supporting concepts</a> section
+of the HTML spec.</p>
+   <div class="monkey-patch">
+    <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="dip-value" data-noexport id="dip-value">document isolation policy value</dfn> is one of three
+strings that controls <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-agent-clusters" id="ref-for-sec-agent-clusters">agent cluster</a> allocation and the fetching of
+cross-origin resources without explicit permission from resource owners.</p>
+    <ul>
+     <li data-md>
+      <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="dip-none" data-noexport id="dip-none">none</dfn>":
+This is the default value. When this value is used, cross-origin resources
+can be fetched without giving explicit permission through the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#cors-protocol" id="ref-for-cors-protocol">CORS
+protocol</a> or the '<a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#http-cross-origin-resource-policy" id="ref-for-http-cross-origin-resource-policy">Cross-Origin-Resource-Policy</a>' header. The document is
+assigned to a non cross-origin isolated <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-agent-clusters" id="ref-for-sec-agent-clusters①">agent cluster</a>.</p>
+     <li data-md>
+      <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="dip-isolate-and-require-corp" data-noexport id="dip-isolate-and-require-corp">isolate-and-require-corp</dfn>":
+When this value is used, fetching cross-origin resources requires the
+server’s explicit permission through the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#cors-protocol" id="ref-for-cors-protocol①">CORS protocol</a> or the
+'<a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#http-cross-origin-resource-policy" id="ref-for-http-cross-origin-resource-policy①">Cross-Origin-Resource-Policy</a>' header. The document is also assigned to a
+cross-origin isolated <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-agent-clusters" id="ref-for-sec-agent-clusters②">agent cluster</a>.</p>
+     <li data-md>
+      <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="dip-isolate-and-credentialless" data-noexport id="dip-isolate-and-credentialless">isolate-and-credentialless</dfn>":
+When this value is used, fetching cross-origin no-CORS resources omits
+credentials. In exchange, an explicit '<a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#http-cross-origin-resource-policy" id="ref-for-http-cross-origin-resource-policy②">Cross-Origin-Resource-Policy</a>'
+header is not required. Other requests sent with credentials require the
+server’s explicit permission through the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#cors-protocol" id="ref-for-cors-protocol②">CORS protocol</a> or the
+'<a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#http-cross-origin-resource-policy" id="ref-for-http-cross-origin-resource-policy③">Cross-Origin-Resource-Policy</a>' header. The document is also assigned to a
+cross-origin isolated <a data-link-type="dfn" href="https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-agent-clusters" id="ref-for-sec-agent-clusters③">agent cluster</a>.</p>
+    </ul>
+    <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="dip-struct" data-noexport id="dip-struct">document isolation policy</dfn> consists of:</p>
+    <ul>
+     <li data-md>
+      <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="dip-struct-value" data-noexport id="dip-struct-value">value</dfn>, which is a <a data-link-type="dfn" href="#dip-value" id="ref-for-dip-value">document
+isolation policy value</a>, initially "<a data-link-type="dfn" href="#dip-none" id="ref-for-dip-none">none</a>.</p>
+     <li data-md>
+      <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="dip-reporting-endpoint" data-noexport id="dip-reporting-endpoint">reporting endpoint</dfn>, initially the
+empty string.</p>
+     <li data-md>
+      <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="dip-report-only-value" data-noexport id="dip-report-only-value">report-only value</dfn>, which is a <a data-link-type="dfn" href="#dip-value" id="ref-for-dip-value①">document
+isolation policy value</a>, initially "<a data-link-type="dfn" href="#dip-none" id="ref-for-dip-none①">none</a>.</p>
+     <li data-md>
+      <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="dip-report-only-endpoint" data-noexport id="dip-report-only-endpoint">report-only reporting endpoint</dfn>,
+initially the empty string.</p>
+    </ul>
+    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="obtain-coi-key" data-noexport id="obtain-coi-key">obtain a cross-origin agent cluster isolation
+key</dfn> given null or a <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct">document isolation policy</a> <em>documentIsolationPolicy</em> and an <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#concept-origin" id="ref-for-concept-origin①">origin</a> <em>origin</em>:</p>
+    <ol>
+     <li data-md>
+      <p>If <em>documentIsolationPolicy</em> is null, return null.</p>
+     <li data-md>
+      <p>If <em>documentIsolationPolicy</em>'s <a data-link-type="dfn" href="#dip-struct-value" id="ref-for-dip-struct-value">value</a> is
+ "<a data-link-type="dfn" href="#dip-none" id="ref-for-dip-none②">none</a>", then return null.</p>
+     <li data-md>
+      <p>Let <em>crossOriginIsolationMode</em> be either "<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#cross-origin-isolation-logical" id="ref-for-cross-origin-isolation-logical②">logical</a>" or "<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#cross-origin-isolation-concrete" id="ref-for-cross-origin-isolation-concrete②">concrete</a>".
+ The choice of which is implementation-defined.</p>
+     <li data-md>
+      <p>Let <em>crossOriginIsolationKey</em> be a new <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key">agent cluster
+ cross-origin isolation key</a>.</p>
+     <li data-md>
+      <p>Set <em>crossOriginIsolationKey</em> to {<em>origin</em>, <em>crossOriginIsolationMode</em>}.</p>
+     <li data-md>
+      <p>Return <em>crossOriginIsolationKey</em>.</p>
+    </ol>
+    <h5 class="heading settled" data-level="2.1.2.1" id="dip-headers"><span class="secno">2.1.2.1. </span><span class="content">The headers</span><a class="self-link" href="#dip-headers"></a></h5>
+    <p>The '<dfn data-dfn-type="dfn" data-lt="dip-header" data-noexport id="dip-header">Document-Isolation-Policy<a class="self-link" href="#dip-header"></a></dfn>' and
+'<dfn data-dfn-type="dfn" data-lt="dip-report-only-header" data-noexport id="dip-report-only-header">Document-Isolation-Policy-Report-Only<a class="self-link" href="#dip-report-only-header"></a></dfn>'
+HTTP response headers allow a server to declare a <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct①">document isolation
+policy</a> for a <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document" id="ref-for-concept-document">document</a>. These headers are <a data-link-type="dfn" href="https://httpwg.org/specs/rfc8941.html#specify" id="ref-for-specify">structured headers</a> whose values
+must be <a data-link-type="dfn" href="https://httpwg.org/specs/rfc8941.html#token" id="ref-for-token">token</a>.</p>
+    <p>The valid <a data-link-type="dfn" href="https://httpwg.org/specs/rfc8941.html#token" id="ref-for-token①">token</a> values are the <a data-link-type="dfn" href="#dip-value" id="ref-for-dip-value②">document isolation policy
+values</a>. The token may also have attached <a data-link-type="dfn" href="https://mimesniff.spec.whatwg.org/#parameters" id="ref-for-parameters">parameters</a>; of these, the
+"report-to" parameter can have a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#valid-url-string" id="ref-for-valid-url-string">valid URL string</a> identifying an
+appropriate reporting endpoint.</p>
+    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="obtain-dip" data-noexport id="obtain-dip">obtain a document isolation policy</dfn> given a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response" id="ref-for-concept-response">response</a> <em>response</em> and an <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#environment" id="ref-for-environment">environment</a> <em>environment</em>:</p>
+    <ol>
+     <li data-md>
+      <p>Let <em>policy</em> be a new <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct②">document isolation policy</a>.</p>
+     <li data-md>
+      <p>If <em>environment</em> is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#non-secure-context" id="ref-for-non-secure-context">non-secure context</a>, then return <em>policy</em>.</p>
+     <li data-md>
+      <p>Let <em>parsedItem</em> be the result of <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-header-list-get-structured-header" id="ref-for-concept-header-list-get-structured-header">getting a structured field value</a> with <code>Document-Isolation-Policy</code> and "item" from <em>response</em>'s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-header-list" id="ref-for-concept-response-header-list">header list</a>.</p>
+     <li data-md>
+      <p>If <em>parsedItem</em> is non-null:</p>
+      <ol>
+       <li data-md>
+        <p>If <em>parsedItem</em>[0] is
+  "<a data-link-type="dfn" href="#dip-isolate-and-require-corp" id="ref-for-dip-isolate-and-require-corp">isolate-and-require-corp</a>" or
+  "<a data-link-type="dfn" href="#dip-isolate-and-credentialless" id="ref-for-dip-isolate-and-credentialless">isolate-and-credentialless</a>", set <em>policy</em>'s <a data-link-type="dfn" href="#dip-struct-value" id="ref-for-dip-struct-value①">value</a> to <em>parsedItem</em>[0].</p>
+       <li data-md>
+        <p>If <em>parsedItem</em>[1]["report-to"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists">exists</a>, then set <em>policy</em>'s <a data-link-type="dfn" href="#dip-reporting-endpoint" id="ref-for-dip-reporting-endpoint">reporting endpoint</a> to <em>parsedItem</em>[1]["report-to"].</p>
+      </ol>
+     <li data-md>
+      <p>Set <em>parsedItem</em> be the result of <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-header-list-get-structured-header" id="ref-for-concept-header-list-get-structured-header①">getting a structured field value</a> with <code>Document-Isolation-Policyi-Report-Only</code> and "item" from <em>response</em>'s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-header-list" id="ref-for-concept-response-header-list①">header list</a>.</p>
+     <li data-md>
+      <p>If <em>parsedItem</em> is non-null:</p>
+      <ol>
+       <li data-md>
+        <p>If <em>parsedItem</em>[0] is
+  "<a data-link-type="dfn" href="#dip-isolate-and-require-corp" id="ref-for-dip-isolate-and-require-corp①">isolate-and-require-corp</a>" or
+  "<a data-link-type="dfn" href="#dip-isolate-and-credentialless" id="ref-for-dip-isolate-and-credentialless①">isolate-and-credentialless</a>", set <em>policy</em>'s <a data-link-type="dfn" href="#dip-report-only-value" id="ref-for-dip-report-only-value">report-only value</a> to <em>parsedItem</em>[0].</p>
+       <li data-md>
+        <p>If <em>parsedItem</em>[1]["report-to"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①">exists</a>, then set <em>policy</em>'s <a data-link-type="dfn" href="#dip-report-only-endpoint" id="ref-for-dip-report-only-endpoint">report-only reporting endpoint</a> to <em>parsedItem</em>[1]["report-to"].</p>
+      </ol>
+     <li data-md>
+      <p>Return policy.</p>
+    </ol>
+   </div>
+   <h4 class="heading settled" data-level="2.1.3" id="dip-policy-containers"><span class="secno">2.1.3. </span><span class="content">Policy containers</span><a class="self-link" href="#dip-policy-containers"></a></h4>
+   <p>Add the following members to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#policy-container" id="ref-for-policy-container">policy container</a> struct:</p>
+   <div class="monkey-patch">
+    <ul>
+     <li data-md>
+      <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="policy-container-dip" data-noexport id="policy-container-dip">document isolation policy</dfn>, which is a <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct③">document isolation policy</a>. It is initially a new <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct④">document isolation policy</a>.</p>
+     <li data-md>
+      <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="policy-container-coi-key" data-noexport id="policy-container-coi-key">agent cluster cross-origin isolation
+key</dfn>, which is null or an <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key①">agent cluster
+cross-origin isolation key</a>. It is initially null. This <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key②">agent cluster cross-origin isolation key</a> is based
+on the <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct⑤">document isolation policy</a> of the document. It overrides the <a data-link-type="dfn" href="#bcg-coi-key" id="ref-for-bcg-coi-key②">agent cluster cross-origin isolation key</a> stored in the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#browsing-context-group" id="ref-for-browsing-context-group②">browsing context group</a>.</p>
+    </ul>
+   </div>
+   <p>Add step 5 and 6 to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#clone-a-policy-container" id="ref-for-clone-a-policy-container">clone a policy container</a> algorithm:</p>
+   <div class="monkey-patch">
+    <ol start="5">
+     <li data-md>
+      <p>Set <em>clone</em>'s <a data-link-type="dfn" href="#policy-container-dip" id="ref-for-policy-container-dip">document isolation policy</a> to a copy
+ of <em>policyContainer</em>'s <a data-link-type="dfn" href="#policy-container-dip" id="ref-for-policy-container-dip①">document isolation policy</a>.</p>
+     <li data-md>
+      <p>Set <em>clone</em>'s <a data-link-type="dfn" href="#policy-container-coi-key" id="ref-for-policy-container-coi-key">agent cluster cross-origin
+ isolation key</a> to a copy of <em>policyContainer</em>'s <a data-link-type="dfn" href="#policy-container-coi-key" id="ref-for-policy-container-coi-key①">agent cluster cross-origin isolation key</a>.</p>
+    </ol>
+   </div>
+   <p>Add step 6 and 7 to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#creating-a-policy-container-from-a-fetch-response" id="ref-for-creating-a-policy-container-from-a-fetch-response">create a policy container from a fetch response </a>:</p>
+   <div class="monkey-patch">
+    <ol start="6">
+     <li data-md>
+      <p>If <em>environment</em> is non-null, then set <em>result</em>'s <a data-link-type="dfn" href="#policy-container-dip" id="ref-for-policy-container-dip②">document isolation policy</a> to the result of <a data-link-type="dfn" href="#obtain-dip" id="ref-for-obtain-dip">obatining a document isolation policy</a> given <em>response</em> and <em>environment</em>.</p>
+     <li data-md>
+      <p>Set <em>result</em>'s <a data-link-type="dfn" href="#policy-container-coi-key" id="ref-for-policy-container-coi-key②">agent cluster cross-origin
+ isolation key</a> to the result of <a data-link-type="dfn" href="#obtain-coi-key" id="ref-for-obtain-coi-key">obtaining a cross-origin
+ isolation key</a> given <em>result</em>'s <a data-link-type="dfn" href="#policy-container-dip" id="ref-for-policy-container-dip③">document isolation
+ policy</a> and <em>response</em>'s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url">URL</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#concept-origin" id="ref-for-concept-origin②">origin</a>.</p>
+    </ol>
+   </div>
+   <h3 class="heading settled" data-level="2.2" id="dip-browsing-contexts"><span class="secno">2.2. </span><span class="content">Browsing contexts</span><a class="self-link" href="#dip-browsing-contexts"></a></h3>
+   <h4 class="heading settled" data-level="2.2.1" id="dip-bc"><span class="secno">2.2.1. </span><span class="content">Browsing contexts</span><a class="self-link" href="#dip-bc"></a></h4>
+   <div class="monkey-patch">
+    <p>Add a step 5 to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#creating-a-new-browsing-context" id="ref-for-creating-a-new-browsing-context">create a new browsing context and document</a> algorithm:</p>
+    <ol start="5">
+     <li data-md>
+      <p>Let <em>creatorAgentClusterCOIKey</em> be null.</p>
+    </ol>
+   </div>
+   <p>Add a step 5.4 to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#creating-a-new-browsing-context" id="ref-for-creating-a-new-browsing-context①">create a new browsing context and document</a> algorithm:</p>
+   <div class="monkey-patch">
+    <p>5.4 Set <em>creatorAgentClusterCOIKey</em> to <em>creator</em>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#policy-container" id="ref-for-policy-container①">policy container</a>'s <a data-link-type="dfn" href="#policy-container-coi-key" id="ref-for-policy-container-coi-key③">agent cluster cross-origin isolation key</a>.</p>
+   </div>
+   <p>Modify step 9 of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#creating-a-new-browsing-context" id="ref-for-creating-a-new-browsing-context②">create a new browsing context and document</a> algorithm:</p>
+   <div class="monkey-patch">
+    <ol start="9">
+     <li data-md>
+      <p>Let <em>agent</em> be the result of obtaining a similar-origin window agent given <em>origin</em>, <em>group</em>, false, and <em>creatorAgentClusterCOIKey</em>.</p>
+    </ol>
+   </div>
+   <h4 class="heading settled" data-level="2.2.2" id="dip-grouping-of-browsing-contexts"><span class="secno">2.2.2. </span><span class="content">Grouping of browsing contexts</span><a class="self-link" href="#dip-grouping-of-browsing-contexts"></a></h4>
+   <p>Remove the following line:</p>
+   <div class="monkey-patch">
+    <p>A <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#browsing-context-group" id="ref-for-browsing-context-group③">browsing context group</a> has a cross-origin isolation mode, which is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#bcg-cross-origin-isolation" id="ref-for-bcg-cross-origin-isolation①">cross-origin isolation mode</a>. It is initially "none".</p>
+   </div>
+   <p>Add the following line:</p>
+   <div class="monkey-patch">
+    <p>A <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#browsing-context-group" id="ref-for-browsing-context-group④">browsing context group</a> has an <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="bcg-coi-key" data-noexport id="bcg-coi-key">agent cluster
+cross-origin isolation key</dfn>, which is null or an <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key③">agent cluster cross-origin isolation key</a> . It is
+initially null. It is set by <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#cross-origin-opener-policies" id="ref-for-cross-origin-opener-policies④">Cross-Origin-Opener-Policy</a>, and is the default <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key④">agent cluster cross-origin isolation key</a> for
+documents inside the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#browsing-context-group" id="ref-for-browsing-context-group⑤">browsing context group</a>. However, it can be overriden by the <a data-link-type="dfn" href="#policy-container-coi-key" id="ref-for-policy-container-coi-key④">policy container’s agent cluster cross-origin
+isolation key</a> when a document has a <a data-link-type="dfn" href="#dip-struct" id="ref-for-dip-struct⑥">document isolation policy</a>.</p>
+   </div>
+   <h3 class="heading settled" data-level="2.3" id="dip-document-lifecycle"><span class="secno">2.3. </span><span class="content">Document lifecycle</span><a class="self-link" href="#dip-document-lifecycle"></a></h3>
+   <h4 class="heading settled" data-level="2.3.1" id="dip-document-creation"><span class="secno">2.3.1. </span><span class="content">Shared document creation infrastructure</span><a class="self-link" href="#dip-document-creation"></a></h4>
+   <p>Modify step 8.4 of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#initialise-the-document-object" id="ref-for-initialise-the-document-object">create and initialize a Document object</a> algorithm:</p>
+   <div class="monkey-patch">
+    <p>Let <em>agent</em> be the result of <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#obtain-similar-origin-window-agent" id="ref-for-obtain-similar-origin-window-agent">obtaining a similar-origin window agent</a> given <em>navigationParams</em>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#concept-origin" id="ref-for-concept-origin③">origin</a>, <em>browsingContext</em>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#browsing-context-group" id="ref-for-browsing-context-group⑥">group</a>, <em>requestsOAC</em>, and <em>navigationParams</em>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#policy-container" id="ref-for-policy-container②">policy container</a>'s <a data-link-type="dfn" href="#policy-container-coi-key" id="ref-for-policy-container-coi-key⑤">agent cluster cross-origin isolation key</a>.</p>
+   </div>
+   <h3 class="heading settled" data-level="2.4" id="dip-agent-clusters"><span class="secno">2.4. </span><span class="content">Agents and agent clusters</span><a class="self-link" href="#dip-agent-clusters"></a></h3>
+   <p>Add the following to the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#integration-with-the-javascript-agent-cluster-formalism" id="ref-for-integration-with-the-javascript-agent-cluster-formalism">Integration with the JavaScript agent cluster
+formalism</a>:</p>
+   <div class="monkey-patch">
+    <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="coi-agent-cluster-key" data-noexport id="coi-agent-cluster-key">agent cluster cross-origin isolation
+key</dfn> is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#tuple" id="ref-for-tuple">tuple</a> of an <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#concept-origin" id="ref-for-concept-origin④">origin</a> and a <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#bcg-cross-origin-isolation" id="ref-for-bcg-cross-origin-isolation②">cross-origin isolation
+mode</a>.</p>
+   </div>
+   <p>Change the definition of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#agent-cluster-key" id="ref-for-agent-cluster-key">agent cluster key</a>:</p>
+   <div class="monkey-patch">
+    <p>An <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#agent-cluster-key" id="ref-for-agent-cluster-key①">agent cluster key</a> is either a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#site" id="ref-for-site">site</a>, or a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-tuple" id="ref-for-concept-origin-tuple">tuple origin</a>, or a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#tuple" id="ref-for-tuple①">tuple</a> of a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-tuple" id="ref-for-concept-origin-tuple①">tuple origin</a> and an <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key⑤">agent cluster
+cross-origin isolation key</a>.</p>
+   </div>
+   <p>Modify the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#obtain-similar-origin-window-agent" id="ref-for-obtain-similar-origin-window-agent①">obtain a similar-origin window agent</a> algorithm definition:</p>
+   <div class="monkey-patch">
+    <p>To <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#obtain-similar-origin-window-agent" id="ref-for-obtain-similar-origin-window-agent②">obtain a similar-origin window agent</a>, given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#concept-origin" id="ref-for-concept-origin⑤">origin</a> <em>origin</em>, a <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#browsing-context-group" id="ref-for-browsing-context-group⑦">browsing context group</a> <em>group</em>, a boolean <em>requestsOAC</em>, and null or an <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key⑥">agent cluster cross-origin isolation key</a> <em>agentClusterCOIKey</em>, run these steps:</p>
+   </div>
+   <p>Modify step 3 of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#obtain-similar-origin-window-agent" id="ref-for-obtain-similar-origin-window-agent③">obtain a similar-origin window agent</a> algorithm:</p>
+   <div class="monkey-patch">
+    <ol start="3">
+     <li data-md>
+      <p>If <em>agentClusterCOIKey</em> is not <em>null</em>, then set <em>key</em> to {<em>origin</em>, <em>agentClusterCOIKey</em>}.</p>
+     <li data-md>
+      <p>Otherwise, if <em>group’s</em> <a data-link-type="dfn" href="#bcg-coi-key" id="ref-for-bcg-coi-key③">agent cluster cross-origin isolation
+ key</a> is not <em>null</em>, then set <em>key</em> to {<em>origin</em>, <em>group’s</em> [=bcg-coi=key|agent
+ cluster cross-origin isolation key=]}.</p>
+    </ol>
+   </div>
+   <p>Modify steps 6.2 and 6.3 of the <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#obtain-similar-origin-window-agent" id="ref-for-obtain-similar-origin-window-agent④">obtain a similar-origin window agent</a> algorithm:</p>
+   <div class="monkey-patch">
+    <p>6.2 If <em>key</em> has an <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key⑦">agent cluster cross-origin
+isolation key</a>, set <em>agentCluster</em>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#bcg-cross-origin-isolation" id="ref-for-bcg-cross-origin-isolation③">cross-origin isolation mode</a> to <em>key</em>'s <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key⑧">agent cluster cross-origin isolation key</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#bcg-cross-origin-isolation" id="ref-for-bcg-cross-origin-isolation④">cross-origin isolation mode</a>.</p>
+    <p>6.3 Set <em>agentCluster</em>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#is-origin-keyed" id="ref-for-is-origin-keyed">is origin-keyed</a> to false if <em>key</em> equals <em>site</em>; otherwise true.</p>
+   </div>
+   <h2 class="heading settled" data-level="3" id="dip-fetch"><span class="secno">3. </span><span class="content">Integration with Fetch</span><a class="self-link" href="#dip-fetch"></a></h2>
+   <p>This section defines a monkey-patch over <a data-link-type="biblio" href="#biblio-fetch" title="Fetch Standard">[Fetch]</a>.</p>
+   <h3 class="heading settled" data-level="3.1" id="dip-requests"><span class="secno">3.1. </span><span class="content">Requests</span><a class="self-link" href="#dip-requests"></a></h3>
+   <p>Add a new algorithm to the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-request" id="ref-for-concept-request-request">Requests</a> part of Fetch:</p>
+   <div class="monkey-patch">
+    <p>To check if <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="document-isolation-policy-allows-credentials">Document-Isolation-Policy allows credentials</dfn>, given a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-request" id="ref-for-concept-request-request①">request</a> <em>request</em>, run these steps:</p>
+    <ol>
+     <li data-md>
+      <p>If <em>request</em>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-mode" id="ref-for-concept-request-mode">mode</a> is not "no-cors", then return true.</p>
+     <li data-md>
+      <p>If <em>request</em>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-client" id="ref-for-concept-request-client">client</a> is null, then return true.</p>
+     <li data-md>
+      <p>If <em>request</em>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-client" id="ref-for-concept-request-client①">client</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#policy-container" id="ref-for-policy-container③">policy container</a>’s <a data-link-type="dfn" href="#policy-container-dip" id="ref-for-policy-container-dip④">document-isolation-policy</a>’s <a data-link-type="dfn" href="#dip-value" id="ref-for-dip-value③">value</a> is not
+ "<a data-link-type="dfn" href="#dip-isolate-and-credentialless" id="ref-for-dip-isolate-and-credentialless②">isolate-and-credentialless</a>", then return true.</p>
+     <li data-md>
+      <p>If <em>request</em>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#concept-origin" id="ref-for-concept-origin⑥">origin</a> is <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#same-origin" id="ref-for-same-origin">same origin</a> with <em>request</em>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-current-url" id="ref-for-concept-request-current-url">current
+ URL</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#concept-origin" id="ref-for-concept-origin⑦">origin</a> and <em>request</em> does not have a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-tainted-origin" id="ref-for-concept-request-tainted-origin">redirect-tainted origin</a>,
+ then return true.</p>
+     <li data-md>
+      <p>Return false.</p>
+    </ol>
+   </div>
+   <h3 class="heading settled" data-level="3.2" id="dip-corp"><span class="secno">3.2. </span><span class="content">'Cross-Origin-Resource-Policy' header</span><a class="self-link" href="#dip-corp"></a></h3>
+   <p>Add a new enum definition to the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#http-cross-origin-resource-policy" id="ref-for-http-cross-origin-resource-policy④">Cross-Origin-Resource-Policy</a> section of Fetch:</p>
+   <div class="monkey-patch">
+    <p>A <dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="corp-check-result" data-noexport id="corp-check-result">cross-origin resource policy internal check result</dfn> is one of five values:</p>
+    <ul>
+     <li data-md>
+      <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="corp-check-allowed" data-noexport id="corp-check-allowed">allowed</dfn>"</p>
+     <li data-md>
+      <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="corp-check-blocked" data-noexport id="corp-check-blocked">blocked</dfn>"</p>
+     <li data-md>
+      <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="corp-check-blocked-coep" data-noexport id="corp-check-blocked-coep">blocked-by-coep</dfn>"</p>
+     <li data-md>
+      <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="corp-check-blocked-dip" data-noexport id="corp-check-blocked-dip">blocked-by-dip</dfn>"</p>
+     <li data-md>
+      <p>"<dfn class="dfn-paneled" data-dfn-type="dfn" data-lt="corp-check-blocked-coep-dip" data-noexport id="corp-check-blocked-coep-dip">blocked-by-coep-and-dip</dfn>"</p>
+    </ul>
+   </div>
+   <p>Modify the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#cross-origin-resource-policy-check" id="ref-for-cross-origin-resource-policy-check">cross-origin resource policy check</a> algorithm:</p>
+   <div class="monkey-patch">
+    <ol start="4">
+     <li data-md>
+      <p>Let <em>documentIsolationPolicy</em> be <em>settingsObject</em>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#policy-container" id="ref-for-policy-container④">policy container</a>’s <a data-link-type="dfn" href="#policy-container-dip" id="ref-for-policy-container-dip⑤">document-isolation-policy</a>.</p>
+     <li data-md>
+      <p>Let <em>reportOnlyCheck</em> be the the result of the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#cross-origin-resource-policy-internal-check" id="ref-for-cross-origin-resource-policy-internal-check">cross-origin resource
+ policy internal check</a> with <em>origin</em>, <em>embedderPolicy</em>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#embedder-policy-report-only-value" id="ref-for-embedder-policy-report-only-value">report only value</a>, <em>documentIsolationPolicy</em>’s <a data-link-type="dfn" href="#dip-report-only-value" id="ref-for-dip-report-only-value①">report only value</a>, <em>response</em>, and <em>forNavigation</em>.</p>
+     <li data-md>
+      <p>If <em>reportOnlyCheck</em> is "<a data-link-type="dfn" href="#corp-check-blocked-coep" id="ref-for-corp-check-blocked-coep">blocked-by-coep</a>" or
+ "<a data-link-type="dfn" href="#corp-check-blocked-coep-dip" id="ref-for-corp-check-blocked-coep-dip">blocked-by-coep-and-dip</a>", then <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#queue-a-cross-origin-embedder-policy-corp-violation-report" id="ref-for-queue-a-cross-origin-embedder-policy-corp-violation-report">queue a
+ cross-origin embedder policy CORP violation report</a> with <em>response</em>, <em>settingsObject</em>, <em>destination</em>, and true.</p>
+     <li data-md>
+      <p>If <em>reportOnlyCheck</em> is "<a data-link-type="dfn" href="#corp-check-blocked-dip" id="ref-for-corp-check-blocked-dip">blocked-by-dip</a>" or
+ "<a data-link-type="dfn" href="#corp-check-blocked-coep-dip" id="ref-for-corp-check-blocked-coep-dip①">blocked-by-coep-and-dip</a>", then <a data-link-type="dfn" href="#queue-a-document-isolation-policy-corp-violation-report" id="ref-for-queue-a-document-isolation-policy-corp-violation-report">queue a
+ document isolation policy CORP violation report</a> with <em>response</em>, <em>settingsObject</em>, <em>destination</em>, and true.</p>
+     <li data-md>
+      <p>Let <em>check</em> be the the result of the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#cross-origin-resource-policy-internal-check" id="ref-for-cross-origin-resource-policy-internal-check①">cross-origin resource
+ policy internal check</a> with <em>origin</em>, <em>embedderPolicy</em>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#embedder-policy-value-2" id="ref-for-embedder-policy-value-2">value</a>, <em>documentIsolationPolicy</em>’s <a data-link-type="dfn" href="#dip-struct-value" id="ref-for-dip-struct-value②">report value</a>, <em>response</em>, and <em>forNavigation</em>.</p>
+     <li data-md>
+      <p>If <em>check</em> is "<a data-link-type="dfn" href="#corp-check-allowed" id="ref-for-corp-check-allowed">allowed</a>", then return <strong>allowed</strong>.</p>
+     <li data-md>
+      <p>If <em>check</em> is "<a data-link-type="dfn" href="#corp-check-blocked-coep" id="ref-for-corp-check-blocked-coep①">blocked-by-coep</a>" or
+  "<a data-link-type="dfn" href="#corp-check-blocked-coep-dip" id="ref-for-corp-check-blocked-coep-dip②">blocked-by-coep-and-dip</a>", then <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#queue-a-cross-origin-embedder-policy-corp-violation-report" id="ref-for-queue-a-cross-origin-embedder-policy-corp-violation-report①">queue a
+  cross-origin embedder policy CORP violation report</a> with <em>response</em>, <em>settingsObject</em>, <em>destination</em>, and false.</p>
+     <li data-md>
+      <p>If <em>reportOnlyCheck</em> is "<a data-link-type="dfn" href="#corp-check-blocked-dip" id="ref-for-corp-check-blocked-dip①">blocked-by-dip</a>" or
+  "<a data-link-type="dfn" href="#corp-check-blocked-coep-dip" id="ref-for-corp-check-blocked-coep-dip③">blocked-by-coep-and-dip</a>", then <a data-link-type="dfn" href="#queue-a-document-isolation-policy-corp-violation-report" id="ref-for-queue-a-document-isolation-policy-corp-violation-report①">queue a
+  document isolation policy CORP violation report</a> with <em>response</em>, <em>settingsObject</em>, <em>destination</em>, and false.</p>
+     <li data-md>
+      <p>Return <strong>blocked</strong>.</p>
+    </ol>
+   </div>
+   <p>Modify the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#cross-origin-resource-policy-internal-check" id="ref-for-cross-origin-resource-policy-internal-check②">cross-origin resource policy internal check</a> algorithm definition:</p>
+   <div class="monkey-patch">
+    <p>To perform a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#cross-origin-resource-policy-internal-check" id="ref-for-cross-origin-resource-policy-internal-check③">cross-origin resource policy internal check</a>, given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#concept-origin" id="ref-for-concept-origin⑧">origin</a> <em>origin</em>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#embedder-policy-value" id="ref-for-embedder-policy-value">embedder policy value</a> <em>embedderPolicyValue</em>, a <a data-link-type="dfn" href="#dip-value" id="ref-for-dip-value④">document isolation policy value</a> <em>documentIsolationPolicyValue</em>, a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response" id="ref-for-concept-response①">response</a> <em>response</em>, and a boolean <em>forNavigation</em>, run these steps:</p>
+   </div>
+   <p>Modify the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#cross-origin-resource-policy-internal-check" id="ref-for-cross-origin-resource-policy-internal-check④">cross-origin resource policy internal check</a> algorithm:</p>
+   <div class="monkey-patch">
+    <ol start="4">
+     <li data-md>
+      <p>Let <em>checkResult</em> be a <a data-link-type="dfn" href="#corp-check-result" id="ref-for-corp-check-result">cross-origin resource policy
+ internal check result</a> with value "<a data-link-type="dfn" href="#corp-check-blocked" id="ref-for-corp-check-blocked">blocked</a>".</p>
+     <li data-md>
+      <p>If <em>policy</em> is null, then:</p>
+      <ol>
+       <li data-md>
+        <p>Let <em>upgradeDueToCOEP</em> be false.</p>
+       <li data-md>
+        <p>Let <em>upgradeDueToDIP</em> be false.</p>
+       <li data-md>
+        <p>Switch on <em>embedderPolicyValue</em>:</p>
+        <ul>
+         <li data-md>
+          <p>"<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#coep-unsafe-none" id="ref-for-coep-unsafe-none">unsafe-none</a>"</p>
+          <ol>
+           <li data-md>
+            <p>Do nothing.</p>
+          </ol>
+         <li data-md>
+          <p>"<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#coep-credentialless" id="ref-for-coep-credentialless">credentialless</a>"</p>
+          <ol>
+           <li data-md>
+            <p>Set <em>upgradeDueToCOEP</em> to true if:</p>
+            <ul>
+             <li data-md>
+              <p><em>response</em>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#response-request-includes-credentials" id="ref-for-response-request-includes-credentials">request-includes-credentials</a> is true, or</p>
+             <li data-md>
+              <p><em>forNavigation</em> is true.</p>
+            </ul>
+          </ol>
+         <li data-md>
+          <p>"<a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#coep-require-corp" id="ref-for-coep-require-corp">require-corp</a>"</p>
+          <ol>
+           <li data-md>
+            <p>Set <em>upgradeDueToCOEP</em> to true.</p>
+          </ol>
+        </ul>
+       <li data-md>
+        <p>Switch on <em>documentIsolationPolicyValue</em>:</p>
+        <ul>
+         <li data-md>
+          <p>"<a data-link-type="dfn" href="#dip-none" id="ref-for-dip-none③">dip-none</a>"</p>
+          <ol>
+           <li data-md>
+            <p>Do nothing.</p>
+          </ol>
+         <li data-md>
+          <p>"<a data-link-type="dfn" href="#dip-isolate-and-credentialless" id="ref-for-dip-isolate-and-credentialless③">isolate-and-credentialless</a>"</p>
+          <ol>
+           <li data-md>
+            <p>Set <em>upgradeDueToDIP</em> to true if <em>response</em>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#response-request-includes-credentials" id="ref-for-response-request-includes-credentials①">request-includes-credentials</a> is true.</p>
+          </ol>
+         <li data-md>
+          <p>"<a data-link-type="dfn" href="#dip-isolate-and-require-corp" id="ref-for-dip-isolate-and-require-corp②">isolate-and-require-corp</a>"</p>
+          <ol>
+           <li data-md>
+            <p>Set <em>upgradeDueToDIP</em> to true.</p>
+          </ol>
+        </ul>
+       <li data-md>
+        <p>If <em>upgradeDueToCOEP</em> or <em>upgradeDueToDIP</em> is true, set <em>policy</em> to
+  'same-origin'.</p>
+       <li data-md>
+        <p>If <em>upgradeDueToCOEP</em> is true, then:</p>
+        <ol>
+         <li data-md>
+          <p>If <em>upgradeDueToDIP</em> is true, then set <em>checkResult</em> to
+ "<a data-link-type="dfn" href="#corp-check-blocked-coep-dip" id="ref-for-corp-check-blocked-coep-dip④">blocked-by-coep-and-dip</a>".</p>
+         <li data-md>
+          <p>Otherwise, set <em>checkResult</em> to
+ "<a data-link-type="dfn" href="#corp-check-blocked" id="ref-for-corp-check-blocked①">blocked-by-coep</a>".</p>
+        </ol>
+       <li data-md>
+        <p>Otherwise, if <em>upgradeDueToDIP</em> is true, then set <em>checkResult</em> to
+     "<a data-link-type="dfn" href="#corp-check-blocked-dip" id="ref-for-corp-check-blocked-dip②">blocked-by-dip</a>".</p>
+      </ol>
+     <li data-md>
+      <p>Switch on <em>policy</em>:</p>
+      <ul>
+       <li data-md>
+        <p>null</p>
+       <li data-md>
+        <p><code>cross-origin</code></p>
+        <ol>
+         <li data-md>
+          <p>Set <em>checkResult</em> to "<a data-link-type="dfn" href="#corp-check-allowed" id="ref-for-corp-check-allowed①">allowed</a>".</p>
+        </ol>
+       <li data-md>
+        <p><code>same-origin</code></p>
+        <ol>
+         <li data-md>
+          <p>If <em>origin</em> is <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#same-origin" id="ref-for-same-origin①">same origin</a> with <em>response</em>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url①">URL</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#concept-origin" id="ref-for-concept-origin⑨">origin</a>,
+  then set <em>checkResult</em> to "<a data-link-type="dfn" href="#corp-check-allowed" id="ref-for-corp-check-allowed②">allowed</a>".</p>
+        </ol>
+       <li data-md>
+        <p><code>same-site</code></p>
+        <ol>
+         <li data-md>
+          <p>If all of the following are true</p>
+          <ul>
+           <li data-md>
+            <p><em>origin</em> is <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#schemelessly-same-site" id="ref-for-schemelessly-same-site">schemelessly same site</a> with <em>response</em>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url②">URL</a>’s <em>origin</em></p>
+           <li data-md>
+            <p><em>origin</em>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-scheme" id="ref-for-concept-url-scheme">scheme</a> is "https" or <em>response</em>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url③">URL</a>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-scheme" id="ref-for-concept-url-scheme①">scheme</a> is not "https"</p>
+          </ul>
+         <li data-md>
+          <p>then set <em>checkResult</em> to "<a data-link-type="dfn" href="#corp-check-allowed" id="ref-for-corp-check-allowed③">allowed</a>".</p>
+        </ol>
+      </ul>
+     <li data-md>
+      <p>Return <em>checkResult</em>.</p>
+    </ol>
+   </div>
+   <p>Add a new algorithm to the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#http-cross-origin-resource-policy" id="ref-for-http-cross-origin-resource-policy⑤">Cross-Origin-Resource-Policy</a> section of Fetch:</p>
+   <div class="monkey-patch">
+    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="queue-a-document-isolation-policy-corp-violation-report">queue a document isolation policy CORP violation report</dfn>, given a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response" id="ref-for-concept-response②">response</a> <em>response</em>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#environment-settings-object" id="ref-for-environment-settings-object">environment settings object</a> <em>settingsObject</em>, a
+string <em>destination</em>, and a boolean <em>reportOnly</em>, run these steps:</p>
+    <ol>
+     <li data-md>
+      <p>Let <em>endpoint</em> be <em>settingsObject</em>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#policy-container" id="ref-for-policy-container⑤">policy container</a>’s <a data-link-type="dfn" href="#policy-container-dip" id="ref-for-policy-container-dip⑥">document-isolation-policy</a>’s <a data-link-type="dfn" href="#dip-report-only-endpoint" id="ref-for-dip-report-only-endpoint①">report only reporting endpoint</a> if <em>reportOnly</em> is true and <em>settingsObject</em>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#policy-container" id="ref-for-policy-container⑥">policy container</a>’s <a data-link-type="dfn" href="#policy-container-dip" id="ref-for-policy-container-dip⑦">document-isolation-policy</a>’s <a data-link-type="dfn" href="#dip-reporting-endpoint" id="ref-for-dip-reporting-endpoint①">reporting endpoint</a> otherwise.</p>
+     <li data-md>
+      <p>Let <em>serializedURL</em> be the result of <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#serialize-a-response-url-for-reporting" id="ref-for-serialize-a-response-url-for-reporting">serializing a response URL for
+ reporting</a> with <em>response</em>.</p>
+     <li data-md>
+      <p>Let <em>disposition</em> be "reporting" if reportOnly is true; otherwise "enforce".</p>
+     <li data-md>
+      <p>Let <em>body</em> be a new object containing the following properties:</p>
+      <table class="def">
+       <tbody>
+        <tr>
+         <th>"type"
+         <td>"corp" 
+        <tr>
+         <th>"blockedURL"
+         <td>serializedURL 
+        <tr>
+         <th>"destination"
+         <td>destination 
+        <tr>
+         <th>"disposition"
+         <td>disposition 
+      </table>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://w3c.github.io/reporting/#generate-and-queue-a-report" id="ref-for-generate-and-queue-a-report">Generate and queue a report</a> for <em>settingsObject</em>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-global" id="ref-for-concept-settings-object-global">global object</a> given the "dip", <em>endpoint</em>, and <em>body</em>.</p>
+    </ol>
+   </div>
+   <h3 class="heading settled" data-level="3.3" id="dip-http-fetch"><span class="secno">3.3. </span><span class="content">HTTP-network-or-cache fetch</span><a class="self-link" href="#dip-http-fetch"></a></h3>
+   <p>Add a step 8.5 to the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-http-network-or-cache-fetch" id="ref-for-concept-http-network-or-cache-fetch">HTTP-network-or-cache fetch</a> algorithm:</p>
+   <div class="monkey-patch">
+    <ol start="5">
+     <li data-md>
+      <p>If <a data-link-type="dfn" href="#document-isolation-policy-allows-credentials" id="ref-for-document-isolation-policy-allows-credentials">Document-Isolation-Policy allows credentials</a> with <em>request</em> returns
+ false, then set <em>includeCredentials</em> to false.</p>
+    </ol>
+   </div>
+  </main>
+<script src="https://www.w3.org/scripts/TR/2021/fixup.js"></script>
+  <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
+  <ul class="index">
+   <li><a href="#bcg-coi-key">bcg-coi-key</a><span>, in § 2.2.2</span>
+   <li><a href="#coi-agent-cluster-key">coi-agent-cluster-key</a><span>, in § 2.4</span>
+   <li><a href="#corp-check-allowed">corp-check-allowed</a><span>, in § 3.2</span>
+   <li><a href="#corp-check-blocked">corp-check-blocked</a><span>, in § 3.2</span>
+   <li><a href="#corp-check-blocked-coep">corp-check-blocked-coep</a><span>, in § 3.2</span>
+   <li><a href="#corp-check-blocked-coep-dip">corp-check-blocked-coep-dip</a><span>, in § 3.2</span>
+   <li><a href="#corp-check-blocked-dip">corp-check-blocked-dip</a><span>, in § 3.2</span>
+   <li><a href="#corp-check-result">corp-check-result</a><span>, in § 3.2</span>
+   <li><a href="#dip-header">dip-header</a><span>, in § 2.1.2.1</span>
+   <li><a href="#dip-isolate-and-credentialless">dip-isolate-and-credentialless</a><span>, in § 2.1.2</span>
+   <li><a href="#dip-isolate-and-require-corp">dip-isolate-and-require-corp</a><span>, in § 2.1.2</span>
+   <li><a href="#dip-none">dip-none</a><span>, in § 2.1.2</span>
+   <li><a href="#dip-reporting-endpoint">dip-reporting-endpoint</a><span>, in § 2.1.2</span>
+   <li><a href="#dip-report-only-endpoint">dip-report-only-endpoint</a><span>, in § 2.1.2</span>
+   <li><a href="#dip-report-only-header">dip-report-only-header</a><span>, in § 2.1.2.1</span>
+   <li><a href="#dip-report-only-value">dip-report-only-value</a><span>, in § 2.1.2</span>
+   <li><a href="#dip-struct">dip-struct</a><span>, in § 2.1.2</span>
+   <li><a href="#dip-struct-value">dip-struct-value</a><span>, in § 2.1.2</span>
+   <li><a href="#dip-value">dip-value</a><span>, in § 2.1.2</span>
+   <li><a href="#document-isolation-policy-allows-credentials">Document-Isolation-Policy allows credentials</a><span>, in § 3.1</span>
+   <li><a href="#obtain-coi-key">obtain-coi-key</a><span>, in § 2.1.2</span>
+   <li><a href="#obtain-dip">obtain-dip</a><span>, in § 2.1.2.1</span>
+   <li><a href="#policy-container-coi-key">policy-container-coi-key</a><span>, in § 2.1.3</span>
+   <li><a href="#policy-container-dip">policy-container-dip</a><span>, in § 2.1.3</span>
+   <li><a href="#queue-a-document-isolation-policy-corp-violation-report">queue a document isolation policy CORP violation report</a><span>, in § 3.2</span>
+  </ul>
+  <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
+  <ul class="index">
+   <li>
+    <a data-link-type="biblio">[DOM]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="a973e0fe">document</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[ECMASCRIPT]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="fa5c4242">agent cluster</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[Fetch]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="857d5516">client</span>
+     <li><span class="dfn-paneled" id="a2a30ba8">cors protocol</span>
+     <li><span class="dfn-paneled" id="2aaa937f">cross-origin resource policy check</span>
+     <li><span class="dfn-paneled" id="ae07036e">cross-origin resource policy internal check</span>
+     <li><span class="dfn-paneled" id="7e8a44f1">cross-origin-resource-policy</span>
+     <li><span class="dfn-paneled" id="3f2ca4de">current url</span>
+     <li><span class="dfn-paneled" id="5c66de35">get a structured field value</span>
+     <li><span class="dfn-paneled" id="f7b00a8b">header list</span>
+     <li><span class="dfn-paneled" id="980528b0">http-network-or-cache fetch</span>
+     <li><span class="dfn-paneled" id="cb98f71f">mode</span>
+     <li><span class="dfn-paneled" id="8cb360fb">queue a cross-origin embedder policy corp violation report</span>
+     <li><span class="dfn-paneled" id="c329eb66">redirect-tainted origin</span>
+     <li><span class="dfn-paneled" id="162d2b51">request</span>
+     <li><span class="dfn-paneled" id="76e370a7">request-includes-credentials</span>
+     <li><span class="dfn-paneled" id="ee7bba09">response</span>
+     <li><span class="dfn-paneled" id="aab97826">serialize a response url for reporting</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[HTML]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="3fa2961f">agent cluster key</span>
+     <li><span class="dfn-paneled" id="c8c92a09">browsing context group</span>
+     <li><span class="dfn-paneled" id="00c57527">clone a policy container</span>
+     <li><span class="dfn-paneled" id="d8813cef">coep</span>
+     <li><span class="dfn-paneled" id="9995e764">coep-credentialless</span>
+     <li><span class="dfn-paneled" id="ec8f27f1">coep-require-corp</span>
+     <li><span class="dfn-paneled" id="0f044324">coep-unsafe-none</span>
+     <li><span class="dfn-paneled" id="16258447">concrete</span>
+     <li><span class="dfn-paneled" id="e3892898">coop</span>
+     <li><span class="dfn-paneled" id="2f018f5f">create a new browsing context and document</span>
+     <li><span class="dfn-paneled" id="ce1c0037">create and initialize a document object</span>
+     <li><span class="dfn-paneled" id="cfb6031b">creating a policy container from a fetch response</span>
+     <li><span class="dfn-paneled" id="2a9c82c5">cross-origin isolation mode</span>
+     <li><span class="dfn-paneled" id="047398fc">cross-origin-embedder-policy</span>
+     <li><span class="dfn-paneled" id="20d23287">cross-origin-opener-policy</span>
+     <li><span class="dfn-paneled" id="4338c067">embedder policy value</span>
+     <li><span class="dfn-paneled" id="d5ce1200">embedder-policy-report-only-value</span>
+     <li><span class="dfn-paneled" id="b998573a">embedder-policy-value-2</span>
+     <li><span class="dfn-paneled" id="77a2dc1b">environment</span>
+     <li><span class="dfn-paneled" id="3e12e042">environment settings object</span>
+     <li><span class="dfn-paneled" id="8a30477b">global object</span>
+     <li><span class="dfn-paneled" id="f58ae318">integration with the javascript agent cluster formalism</span>
+     <li><span class="dfn-paneled" id="33549c7a">is origin-keyed</span>
+     <li><span class="dfn-paneled" id="ee4df7df">loading web pages supporting concepts</span>
+     <li><span class="dfn-paneled" id="6dc08662">logical</span>
+     <li><span class="dfn-paneled" id="5155c2d3">non-secure context</span>
+     <li><span class="dfn-paneled" id="c56b026c">obtain a browsing context to use for a navigation response</span>
+     <li><span class="dfn-paneled" id="76cf46eb">obtain a similar-origin window agent</span>
+     <li><span class="dfn-paneled" id="98cfc8b6">obtaining a similar-origin window agent</span>
+     <li><span class="dfn-paneled" id="3124aef9">origin</span>
+     <li><span class="dfn-paneled" id="0741b07e">policy container</span>
+     <li><span class="dfn-paneled" id="f26905b5">same origin</span>
+     <li><span class="dfn-paneled" id="8af97c1e">same-origin-plus-coep</span>
+     <li><span class="dfn-paneled" id="0757a962">schemelessly same site</span>
+     <li><span class="dfn-paneled" id="fb9bb722">site</span>
+     <li><span class="dfn-paneled" id="c2fcb960">top-level browsing context</span>
+     <li><span class="dfn-paneled" id="1d2aa117">tuple origin</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[INFRA]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="33a77dff">map-exists</span>
+     <li><span class="dfn-paneled" id="0e8de730">tuple</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[MIMESNIFF]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="fc5a3214">parameters</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[REPORTING-1]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="7ed9d314">generate and queue a report</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[STRUCTURED-FIELDS]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="f9433a40">structured headers</span>
+     <li><span class="dfn-paneled" id="04dc11d2">token</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[URL]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="3a711be7">scheme</span>
+     <li><span class="dfn-paneled" id="dcffbccd">url</span>
+     <li><span class="dfn-paneled" id="05af0c3f">valid url string</span>
+    </ul>
+  </ul>
+  <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
+  <dl>
+   <dt id="biblio-dom">[DOM]
+   <dd>Anne van Kesteren. <a href="https://dom.spec.whatwg.org/"><cite>DOM Standard</cite></a>. Living Standard. URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
+   <dt id="biblio-ecmascript">[ECMASCRIPT]
+   <dd><a href="https://tc39.es/ecma262/multipage/"><cite>ECMAScript Language Specification</cite></a>. URL: <a href="https://tc39.es/ecma262/multipage/">https://tc39.es/ecma262/multipage/</a>
+   <dt id="biblio-fetch">[Fetch]
+   <dd>Anne van Kesteren. <a href="https://fetch.spec.whatwg.org/"><cite>Fetch Standard</cite></a>. Living Standard. URL: <a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>
+   <dt id="biblio-html">[HTML]
+   <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/"><cite>HTML Standard</cite></a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
+   <dt id="biblio-infra">[INFRA]
+   <dd>Anne van Kesteren; Domenic Denicola. <a href="https://infra.spec.whatwg.org/"><cite>Infra Standard</cite></a>. Living Standard. URL: <a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>
+   <dt id="biblio-mimesniff">[MIMESNIFF]
+   <dd>Gordon P. Hemsley. <a href="https://mimesniff.spec.whatwg.org/"><cite>MIME Sniffing Standard</cite></a>. Living Standard. URL: <a href="https://mimesniff.spec.whatwg.org/">https://mimesniff.spec.whatwg.org/</a>
+   <dt id="biblio-reporting-1">[REPORTING-1]
+   <dd>Douglas Creager; Ian Clelland; Mike West. <a href="https://w3c.github.io/reporting/"><cite>Reporting API</cite></a>. URL: <a href="https://w3c.github.io/reporting/">https://w3c.github.io/reporting/</a>
+   <dt id="biblio-url">[URL]
+   <dd>Anne van Kesteren. <a href="https://url.spec.whatwg.org/"><cite>URL Standard</cite></a>. Living Standard. URL: <a href="https://url.spec.whatwg.org/">https://url.spec.whatwg.org/</a>
+  </dl>
+  <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
+  <dl>
+   <dt id="biblio-explainer">[EXPLAINER]
+   <dd>Camille Lamy. <a href="https://github.com/WICG/document-isolation-policy"><cite>Document-Isolation-Policy explainer</cite></a>. URL: <a href="https://github.com/WICG/document-isolation-policy">https://github.com/WICG/document-isolation-policy</a>
+   <dt id="biblio-spectre">[Spectre]
+   <dd>Paul Kocher; et al. <a href="https://spectreattack.com/spectre.pdf"><cite>Spectre Attacks: Exploiting Speculative Execution</cite></a>. URL: <a href="https://spectreattack.com/spectre.pdf">https://spectreattack.com/spectre.pdf</a>
+   <dt id="biblio-whycoopcoep">[WhyCoopCoep]
+   <dd>Eiji Kitamura; Demenic Denicola. <a href="https://web.dev/why-coop-coep/"><cite>Why you need "cross-origin isolated" for powerful features</cite></a>. URL: <a href="https://web.dev/why-coop-coep/">https://web.dev/why-coop-coep/</a>
+  </dl>
+<script>/* Boilerplate: script-dfn-panel */
+"use strict";
+{
+    const dfnsJson = window.dfnsJson || {};
+
+    function genDfnPanel({dfnID, url, dfnText, refSections, external}) {
+        return mk.aside({
+            class: "dfn-panel",
+            id: `infopanel-for-${dfnID}`,
+            "data-for": dfnID,
+            "aria-labelled-by":`infopaneltitle-for-${dfnID}`,
+            },
+            mk.span({id:`infopaneltitle-for-${dfnID}`, style:"display:none"},
+                `Info about the '${dfnText}' ${external?"external":""} reference.`),
+            mk.a({href:url}, url),
+            mk.b({}, "Referenced in:"),
+            mk.ul({},
+                ...refSections.map(section=>
+                    mk.li({},
+                        ...section.refs.map((ref, refI)=>
+                            [
+                                mk.a({
+                                    href: `#${ref.id}`
+                                    },
+                                    (refI == 0) ? section.title : `(${refI + 1})`
+                                ),
+                                " ",
+                            ]
+                        ),
+                    ),
+                ),
+            ),
+        );
+    }
+
+    function genAllDfnPanels() {
+        for(const panelData of Object.values(window.dfnpanelData)) {
+            const dfnID = panelData.dfnID;
+            const dfn = document.getElementById(dfnID);
+            if(!dfn) {
+                console.log(`Can't find dfn#${dfnID}.`, panelData);
+            } else {
+                const panel = genDfnPanel(panelData);
+                append(document.body, panel);
+                insertDfnPopupAction(dfn, panel)
+            }
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", ()=>{
+        genAllDfnPanels();
+
+        // Add popup behavior to all dfns to show the corresponding dfn-panel.
+        var dfns = queryAll('.dfn-paneled');
+        for(let dfn of dfns) { ; }
+
+        document.body.addEventListener("click", (e) => {
+            // If not handled already, just hide all dfn panels.
+            hideAllDfnPanels();
+        });
+    })
+
+
+    function hideAllDfnPanels() {
+        // Turn off any currently "on" or "activated" panels.
+        queryAll(".dfn-panel.on, .dfn-panel.activated").forEach(el=>hideDfnPanel(el));
+    }
+
+    function showDfnPanel(dfnPanel, dfn) {
+        hideAllDfnPanels(); // Only display one at this time.
+        dfn.setAttribute("aria-expanded", "true");
+        dfnPanel.classList.add("on");
+        dfnPanel.style.left = "5px";
+        dfnPanel.style.top = "0px";
+        const panelRect = dfnPanel.getBoundingClientRect();
+        const panelWidth = panelRect.right - panelRect.left;
+        if (panelRect.right > document.body.scrollWidth) {
+            // Panel's overflowing the screen.
+            // Just drop it below the dfn and flip it rightward instead.
+            // This still wont' fix things if the screen is *really* wide,
+            // but fixing that's a lot harder without 'anchor()'.
+            dfnPanel.style.top = "1.5em";
+            dfnPanel.style.left = "auto";
+            dfnPanel.style.right = "0px";
+        }
+    }
+
+    function pinDfnPanel(dfnPanel) {
+        // Switch it to "activated" state, which pins it.
+        dfnPanel.classList.add("activated");
+        dfnPanel.style.left = null;
+        dfnPanel.style.top = null;
+    }
+
+    function hideDfnPanel(dfnPanel, dfn) {
+        if(!dfn) {
+            dfn = document.getElementById(dfnPanel.getAttribute("data-for"));
+        }
+        dfn.setAttribute("aria-expanded", "false")
+        dfnPanel.classList.remove("on");
+        dfnPanel.classList.remove("activated");
+    }
+
+    function toggleDfnPanel(dfnPanel, dfn) {
+        if(dfnPanel.classList.contains("on")) {
+            hideDfnPanel(dfnPanel, dfn);
+        } else {
+            showDfnPanel(dfnPanel, dfn);
+        }
+    }
+
+    function insertDfnPopupAction(dfn, dfnPanel) {
+        // Find dfn panel
+        const panelWrapper = document.createElement('span');
+        panelWrapper.appendChild(dfnPanel);
+        panelWrapper.style.position = "relative";
+        panelWrapper.style.height = "0px";
+        dfn.insertAdjacentElement("afterend", panelWrapper);
+        dfn.setAttribute('role', 'button');
+        dfn.setAttribute('aria-expanded', 'false')
+        dfn.tabIndex = 0;
+        dfn.classList.add('has-dfn-panel');
+        dfn.addEventListener('click', (event) => {
+            showDfnPanel(dfnPanel, dfn);
+            event.stopPropagation();
+        });
+        dfn.addEventListener('keypress', (event) => {
+            const kc = event.keyCode;
+            // 32->Space, 13->Enter
+            if(kc == 32 || kc == 13) {
+                toggleDfnPanel(dfnPanel, dfn);
+                event.stopPropagation();
+                event.preventDefault();
+            }
+        });
+
+        dfnPanel.addEventListener('click', (event) => {
+            if (event.target.nodeName == 'A') {
+                pinDfnPanel(dfnPanel);
+            }
+            event.stopPropagation();
+        });
+
+        dfnPanel.addEventListener('keydown', (event) => {
+            if(event.keyCode == 27) { // Escape key
+                hideDfnPanel(dfnPanel, dfn);
+                event.stopPropagation();
+                event.preventDefault();
+            }
+        })
+    }
+}
+</script>
+<script>/* Boilerplate: script-dfn-panel */
+"use strict";
+{
+    const dfnsJson = window.dfnsJson || {};
+
+    function genDfnPanel({dfnID, url, dfnText, refSections, external}) {
+        return mk.aside({
+            class: "dfn-panel",
+            id: `infopanel-for-${dfnID}`,
+            "data-for": dfnID,
+            "aria-labelled-by":`infopaneltitle-for-${dfnID}`,
+            },
+            mk.span({id:`infopaneltitle-for-${dfnID}`, style:"display:none"},
+                `Info about the '${dfnText}' ${external?"external":""} reference.`),
+            mk.a({href:url}, url),
+            mk.b({}, "Referenced in:"),
+            mk.ul({},
+                ...refSections.map(section=>
+                    mk.li({},
+                        ...section.refs.map((ref, refI)=>
+                            [
+                                mk.a({
+                                    href: `#${ref.id}`
+                                    },
+                                    (refI == 0) ? section.title : `(${refI + 1})`
+                                ),
+                                " ",
+                            ]
+                        ),
+                    ),
+                ),
+            ),
+        );
+    }
+
+    function genAllDfnPanels() {
+        for(const panelData of Object.values(window.dfnpanelData)) {
+            const dfnID = panelData.dfnID;
+            const dfn = document.getElementById(dfnID);
+            if(!dfn) {
+                console.log(`Can't find dfn#${dfnID}.`, panelData);
+            } else {
+                const panel = genDfnPanel(panelData);
+                append(document.body, panel);
+                insertDfnPopupAction(dfn, panel)
+            }
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", ()=>{
+        genAllDfnPanels();
+
+        // Add popup behavior to all dfns to show the corresponding dfn-panel.
+        var dfns = queryAll('.dfn-paneled');
+        for(let dfn of dfns) { ; }
+
+        document.body.addEventListener("click", (e) => {
+            // If not handled already, just hide all dfn panels.
+            hideAllDfnPanels();
+        });
+    })
+
+
+    function hideAllDfnPanels() {
+        // Turn off any currently "on" or "activated" panels.
+        queryAll(".dfn-panel.on, .dfn-panel.activated").forEach(el=>hideDfnPanel(el));
+    }
+
+    function showDfnPanel(dfnPanel, dfn) {
+        hideAllDfnPanels(); // Only display one at this time.
+        dfn.setAttribute("aria-expanded", "true");
+        dfnPanel.classList.add("on");
+        dfnPanel.style.left = "5px";
+        dfnPanel.style.top = "0px";
+        const panelRect = dfnPanel.getBoundingClientRect();
+        const panelWidth = panelRect.right - panelRect.left;
+        if (panelRect.right > document.body.scrollWidth) {
+            // Panel's overflowing the screen.
+            // Just drop it below the dfn and flip it rightward instead.
+            // This still wont' fix things if the screen is *really* wide,
+            // but fixing that's a lot harder without 'anchor()'.
+            dfnPanel.style.top = "1.5em";
+            dfnPanel.style.left = "auto";
+            dfnPanel.style.right = "0px";
+        }
+    }
+
+    function pinDfnPanel(dfnPanel) {
+        // Switch it to "activated" state, which pins it.
+        dfnPanel.classList.add("activated");
+        dfnPanel.style.left = null;
+        dfnPanel.style.top = null;
+    }
+
+    function hideDfnPanel(dfnPanel, dfn) {
+        if(!dfn) {
+            dfn = document.getElementById(dfnPanel.getAttribute("data-for"));
+        }
+        dfn.setAttribute("aria-expanded", "false")
+        dfnPanel.classList.remove("on");
+        dfnPanel.classList.remove("activated");
+    }
+
+    function toggleDfnPanel(dfnPanel, dfn) {
+        if(dfnPanel.classList.contains("on")) {
+            hideDfnPanel(dfnPanel, dfn);
+        } else {
+            showDfnPanel(dfnPanel, dfn);
+        }
+    }
+
+    function insertDfnPopupAction(dfn, dfnPanel) {
+        // Find dfn panel
+        const panelWrapper = document.createElement('span');
+        panelWrapper.appendChild(dfnPanel);
+        panelWrapper.style.position = "relative";
+        panelWrapper.style.height = "0px";
+        dfn.insertAdjacentElement("afterend", panelWrapper);
+        dfn.setAttribute('role', 'button');
+        dfn.setAttribute('aria-expanded', 'false')
+        dfn.tabIndex = 0;
+        dfn.classList.add('has-dfn-panel');
+        dfn.addEventListener('click', (event) => {
+            showDfnPanel(dfnPanel, dfn);
+            event.stopPropagation();
+        });
+        dfn.addEventListener('keypress', (event) => {
+            const kc = event.keyCode;
+            // 32->Space, 13->Enter
+            if(kc == 32 || kc == 13) {
+                toggleDfnPanel(dfnPanel, dfn);
+                event.stopPropagation();
+                event.preventDefault();
+            }
+        });
+
+        dfnPanel.addEventListener('click', (event) => {
+            if (event.target.nodeName == 'A') {
+                pinDfnPanel(dfnPanel);
+            }
+            event.stopPropagation();
+        });
+
+        dfnPanel.addEventListener('keydown', (event) => {
+            if(event.keyCode == 27) { // Escape key
+                hideDfnPanel(dfnPanel, dfn);
+                event.stopPropagation();
+                event.preventDefault();
+            }
+        })
+    }
+}
+</script>
+<script>/* Boilerplate: script-dfn-panel-json */
+window.dfnpanelData = {};
+window.dfnpanelData['a973e0fe'] = {"dfnID": "a973e0fe", "url": "https://dom.spec.whatwg.org/#concept-document", "dfnText": "document", "refSections": [{"refs": [{"id": "ref-for-concept-document"}], "title": "2.1.2.1. The headers"}], "external": true};
+window.dfnpanelData['fa5c4242'] = {"dfnID": "fa5c4242", "url": "https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-agent-clusters", "dfnText": "agent cluster", "refSections": [{"refs": [{"id": "ref-for-sec-agent-clusters"}, {"id": "ref-for-sec-agent-clusters\u2460"}, {"id": "ref-for-sec-agent-clusters\u2461"}, {"id": "ref-for-sec-agent-clusters\u2462"}], "title": "2.1.2. Document Isolation Policies"}], "external": true};
+window.dfnpanelData['857d5516'] = {"dfnID": "857d5516", "url": "https://fetch.spec.whatwg.org/#concept-request-client", "dfnText": "client", "refSections": [{"refs": [{"id": "ref-for-concept-request-client"}, {"id": "ref-for-concept-request-client\u2460"}], "title": "3.1. Requests"}], "external": true};
+window.dfnpanelData['a2a30ba8'] = {"dfnID": "a2a30ba8", "url": "https://fetch.spec.whatwg.org/#cors-protocol", "dfnText": "cors protocol", "refSections": [{"refs": [{"id": "ref-for-cors-protocol"}, {"id": "ref-for-cors-protocol\u2460"}, {"id": "ref-for-cors-protocol\u2461"}], "title": "2.1.2. Document Isolation Policies"}], "external": true};
+window.dfnpanelData['2aaa937f'] = {"dfnID": "2aaa937f", "url": "https://fetch.spec.whatwg.org/#cross-origin-resource-policy-check", "dfnText": "cross-origin resource policy check", "refSections": [{"refs": [{"id": "ref-for-cross-origin-resource-policy-check"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['ae07036e'] = {"dfnID": "ae07036e", "url": "https://fetch.spec.whatwg.org/#cross-origin-resource-policy-internal-check", "dfnText": "cross-origin resource policy internal check", "refSections": [{"refs": [{"id": "ref-for-cross-origin-resource-policy-internal-check"}, {"id": "ref-for-cross-origin-resource-policy-internal-check\u2460"}, {"id": "ref-for-cross-origin-resource-policy-internal-check\u2461"}, {"id": "ref-for-cross-origin-resource-policy-internal-check\u2462"}, {"id": "ref-for-cross-origin-resource-policy-internal-check\u2463"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['7e8a44f1'] = {"dfnID": "7e8a44f1", "url": "https://fetch.spec.whatwg.org/#http-cross-origin-resource-policy", "dfnText": "cross-origin-resource-policy", "refSections": [{"refs": [{"id": "ref-for-http-cross-origin-resource-policy"}, {"id": "ref-for-http-cross-origin-resource-policy\u2460"}, {"id": "ref-for-http-cross-origin-resource-policy\u2461"}, {"id": "ref-for-http-cross-origin-resource-policy\u2462"}], "title": "2.1.2. Document Isolation Policies"}, {"refs": [{"id": "ref-for-http-cross-origin-resource-policy\u2463"}, {"id": "ref-for-http-cross-origin-resource-policy\u2464"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['3f2ca4de'] = {"dfnID": "3f2ca4de", "url": "https://fetch.spec.whatwg.org/#concept-request-current-url", "dfnText": "current url", "refSections": [{"refs": [{"id": "ref-for-concept-request-current-url"}], "title": "3.1. Requests"}], "external": true};
+window.dfnpanelData['5c66de35'] = {"dfnID": "5c66de35", "url": "https://fetch.spec.whatwg.org/#concept-header-list-get-structured-header", "dfnText": "get a structured field value", "refSections": [{"refs": [{"id": "ref-for-concept-header-list-get-structured-header"}, {"id": "ref-for-concept-header-list-get-structured-header\u2460"}], "title": "2.1.2.1. The headers"}], "external": true};
+window.dfnpanelData['f7b00a8b'] = {"dfnID": "f7b00a8b", "url": "https://fetch.spec.whatwg.org/#concept-response-header-list", "dfnText": "header list", "refSections": [{"refs": [{"id": "ref-for-concept-response-header-list"}, {"id": "ref-for-concept-response-header-list\u2460"}], "title": "2.1.2.1. The headers"}], "external": true};
+window.dfnpanelData['980528b0'] = {"dfnID": "980528b0", "url": "https://fetch.spec.whatwg.org/#concept-http-network-or-cache-fetch", "dfnText": "http-network-or-cache fetch", "refSections": [{"refs": [{"id": "ref-for-concept-http-network-or-cache-fetch"}], "title": "3.3. HTTP-network-or-cache fetch"}], "external": true};
+window.dfnpanelData['cb98f71f'] = {"dfnID": "cb98f71f", "url": "https://fetch.spec.whatwg.org/#concept-request-mode", "dfnText": "mode", "refSections": [{"refs": [{"id": "ref-for-concept-request-mode"}], "title": "3.1. Requests"}], "external": true};
+window.dfnpanelData['8cb360fb'] = {"dfnID": "8cb360fb", "url": "https://fetch.spec.whatwg.org/#queue-a-cross-origin-embedder-policy-corp-violation-report", "dfnText": "queue a cross-origin embedder policy corp violation report", "refSections": [{"refs": [{"id": "ref-for-queue-a-cross-origin-embedder-policy-corp-violation-report"}, {"id": "ref-for-queue-a-cross-origin-embedder-policy-corp-violation-report\u2460"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['c329eb66'] = {"dfnID": "c329eb66", "url": "https://fetch.spec.whatwg.org/#concept-request-tainted-origin", "dfnText": "redirect-tainted origin", "refSections": [{"refs": [{"id": "ref-for-concept-request-tainted-origin"}], "title": "3.1. Requests"}], "external": true};
+window.dfnpanelData['162d2b51'] = {"dfnID": "162d2b51", "url": "https://fetch.spec.whatwg.org/#concept-request-request", "dfnText": "request", "refSections": [{"refs": [{"id": "ref-for-concept-request-request"}, {"id": "ref-for-concept-request-request\u2460"}], "title": "3.1. Requests"}], "external": true};
+window.dfnpanelData['76e370a7'] = {"dfnID": "76e370a7", "url": "https://fetch.spec.whatwg.org/#response-request-includes-credentials", "dfnText": "request-includes-credentials", "refSections": [{"refs": [{"id": "ref-for-response-request-includes-credentials"}, {"id": "ref-for-response-request-includes-credentials\u2460"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['ee7bba09'] = {"dfnID": "ee7bba09", "url": "https://fetch.spec.whatwg.org/#concept-response", "dfnText": "response", "refSections": [{"refs": [{"id": "ref-for-concept-response"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-concept-response\u2460"}, {"id": "ref-for-concept-response\u2461"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['aab97826'] = {"dfnID": "aab97826", "url": "https://fetch.spec.whatwg.org/#serialize-a-response-url-for-reporting", "dfnText": "serialize a response url for reporting", "refSections": [{"refs": [{"id": "ref-for-serialize-a-response-url-for-reporting"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['3fa2961f'] = {"dfnID": "3fa2961f", "url": "https://html.spec.whatwg.org/C/#agent-cluster-key", "dfnText": "agent cluster key", "refSections": [{"refs": [{"id": "ref-for-agent-cluster-key"}, {"id": "ref-for-agent-cluster-key\u2460"}], "title": "2.4. Agents and agent clusters"}], "external": true};
+window.dfnpanelData['c8c92a09'] = {"dfnID": "c8c92a09", "url": "https://html.spec.whatwg.org/C/#browsing-context-group", "dfnText": "browsing context group", "refSections": [{"refs": [{"id": "ref-for-browsing-context-group"}], "title": "2.1.1. Cross-origin-opener-policies"}, {"refs": [{"id": "ref-for-browsing-context-group\u2460"}], "title": "2.1.1.1. Browsing context group switches due to cross-origin opener policy"}, {"refs": [{"id": "ref-for-browsing-context-group\u2461"}], "title": "2.1.3. Policy containers"}, {"refs": [{"id": "ref-for-browsing-context-group\u2462"}, {"id": "ref-for-browsing-context-group\u2463"}, {"id": "ref-for-browsing-context-group\u2464"}], "title": "2.2.2. Grouping of browsing contexts"}, {"refs": [{"id": "ref-for-browsing-context-group\u2465"}], "title": "2.3.1. Shared document creation infrastructure"}, {"refs": [{"id": "ref-for-browsing-context-group\u2466"}], "title": "2.4. Agents and agent clusters"}], "external": true};
+window.dfnpanelData['00c57527'] = {"dfnID": "00c57527", "url": "https://html.spec.whatwg.org/multipage/browsers.html#clone-a-policy-container", "dfnText": "clone a policy container", "refSections": [{"refs": [{"id": "ref-for-clone-a-policy-container"}], "title": "2.1.3. Policy containers"}], "external": true};
+window.dfnpanelData['d8813cef'] = {"dfnID": "d8813cef", "url": "https://html.spec.whatwg.org/C/#coep", "dfnText": "coep", "refSections": [{"refs": [{"id": "ref-for-coep"}, {"id": "ref-for-coep\u2460"}, {"id": "ref-for-coep\u2461"}, {"id": "ref-for-coep\u2462"}], "title": "1.1. Recommended readings"}], "external": true};
+window.dfnpanelData['9995e764'] = {"dfnID": "9995e764", "url": "https://html.spec.whatwg.org/C/#coep-credentialless", "dfnText": "coep-credentialless", "refSections": [{"refs": [{"id": "ref-for-coep-credentialless"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['ec8f27f1'] = {"dfnID": "ec8f27f1", "url": "https://html.spec.whatwg.org/C/#coep-require-corp", "dfnText": "coep-require-corp", "refSections": [{"refs": [{"id": "ref-for-coep-require-corp"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['0f044324'] = {"dfnID": "0f044324", "url": "https://html.spec.whatwg.org/C/#coep-unsafe-none", "dfnText": "coep-unsafe-none", "refSections": [{"refs": [{"id": "ref-for-coep-unsafe-none"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['16258447'] = {"dfnID": "16258447", "url": "https://html.spec.whatwg.org/C/#cross-origin-isolation-concrete", "dfnText": "concrete", "refSections": [{"refs": [{"id": "ref-for-cross-origin-isolation-concrete"}], "title": "2.1.1. Cross-origin-opener-policies"}, {"refs": [{"id": "ref-for-cross-origin-isolation-concrete\u2460"}], "title": "2.1.1.1. Browsing context group switches due to cross-origin opener policy"}, {"refs": [{"id": "ref-for-cross-origin-isolation-concrete\u2461"}], "title": "2.1.2. Document Isolation Policies"}], "external": true};
+window.dfnpanelData['e3892898'] = {"dfnID": "e3892898", "url": "https://html.spec.whatwg.org/C/#cross-origin-opener-policies", "dfnText": "coop", "refSections": [{"refs": [{"id": "ref-for-cross-origin-opener-policies"}, {"id": "ref-for-cross-origin-opener-policies\u2460"}, {"id": "ref-for-cross-origin-opener-policies\u2461"}, {"id": "ref-for-cross-origin-opener-policies\u2462"}], "title": "1.1. Recommended readings"}, {"refs": [{"id": "ref-for-cross-origin-opener-policies\u2463"}], "title": "2.2.2. Grouping of browsing contexts"}], "external": true};
+window.dfnpanelData['2f018f5f'] = {"dfnID": "2f018f5f", "url": "https://html.spec.whatwg.org/C/#creating-a-new-browsing-context", "dfnText": "create a new browsing context and document", "refSections": [{"refs": [{"id": "ref-for-creating-a-new-browsing-context"}, {"id": "ref-for-creating-a-new-browsing-context\u2460"}, {"id": "ref-for-creating-a-new-browsing-context\u2461"}], "title": "2.2.1. Browsing contexts"}], "external": true};
+window.dfnpanelData['ce1c0037'] = {"dfnID": "ce1c0037", "url": "https://html.spec.whatwg.org/C/#initialise-the-document-object", "dfnText": "create and initialize a document object", "refSections": [{"refs": [{"id": "ref-for-initialise-the-document-object"}], "title": "2.3.1. Shared document creation infrastructure"}], "external": true};
+window.dfnpanelData['cfb6031b'] = {"dfnID": "cfb6031b", "url": "https://html.spec.whatwg.org/multipage/browsers.html#creating-a-policy-container-from-a-fetch-response", "dfnText": "creating a policy container from a fetch response", "refSections": [{"refs": [{"id": "ref-for-creating-a-policy-container-from-a-fetch-response"}], "title": "2.1.3. Policy containers"}], "external": true};
+window.dfnpanelData['2a9c82c5'] = {"dfnID": "2a9c82c5", "url": "https://html.spec.whatwg.org/C/#bcg-cross-origin-isolation", "dfnText": "cross-origin isolation mode", "refSections": [{"refs": [{"id": "ref-for-bcg-cross-origin-isolation"}], "title": "2.1.1. Cross-origin-opener-policies"}, {"refs": [{"id": "ref-for-bcg-cross-origin-isolation\u2460"}], "title": "2.2.2. Grouping of browsing contexts"}, {"refs": [{"id": "ref-for-bcg-cross-origin-isolation\u2461"}, {"id": "ref-for-bcg-cross-origin-isolation\u2462"}, {"id": "ref-for-bcg-cross-origin-isolation\u2463"}], "title": "2.4. Agents and agent clusters"}], "external": true};
+window.dfnpanelData['047398fc'] = {"dfnID": "047398fc", "url": "https://html.spec.whatwg.org/C/#coep", "dfnText": "cross-origin-embedder-policy", "refSections": [{"refs": [{"id": "ref-for-coep"}, {"id": "ref-for-coep\u2460"}, {"id": "ref-for-coep\u2461"}, {"id": "ref-for-coep\u2462"}], "title": "1.1. Recommended readings"}], "external": true};
+window.dfnpanelData['20d23287'] = {"dfnID": "20d23287", "url": "https://html.spec.whatwg.org/C/#cross-origin-opener-policies", "dfnText": "cross-origin-opener-policy", "refSections": [{"refs": [{"id": "ref-for-cross-origin-opener-policies"}, {"id": "ref-for-cross-origin-opener-policies\u2460"}, {"id": "ref-for-cross-origin-opener-policies\u2461"}, {"id": "ref-for-cross-origin-opener-policies\u2462"}], "title": "1.1. Recommended readings"}, {"refs": [{"id": "ref-for-cross-origin-opener-policies\u2463"}], "title": "2.2.2. Grouping of browsing contexts"}], "external": true};
+window.dfnpanelData['4338c067'] = {"dfnID": "4338c067", "url": "https://html.spec.whatwg.org/multipage/browsers.html#embedder-policy-value", "dfnText": "embedder policy value", "refSections": [{"refs": [{"id": "ref-for-embedder-policy-value"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['d5ce1200'] = {"dfnID": "d5ce1200", "url": "https://html.spec.whatwg.org/C/#embedder-policy-report-only-value", "dfnText": "embedder-policy-report-only-value", "refSections": [{"refs": [{"id": "ref-for-embedder-policy-report-only-value"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['b998573a'] = {"dfnID": "b998573a", "url": "https://html.spec.whatwg.org/C/#embedder-policy-value-2", "dfnText": "embedder-policy-value-2", "refSections": [{"refs": [{"id": "ref-for-embedder-policy-value-2"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['77a2dc1b'] = {"dfnID": "77a2dc1b", "url": "https://html.spec.whatwg.org/C/#environment", "dfnText": "environment", "refSections": [{"refs": [{"id": "ref-for-environment"}], "title": "2.1.2.1. The headers"}], "external": true};
+window.dfnpanelData['3e12e042'] = {"dfnID": "3e12e042", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#environment-settings-object", "dfnText": "environment settings object", "refSections": [{"refs": [{"id": "ref-for-environment-settings-object"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['8a30477b'] = {"dfnID": "8a30477b", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-global", "dfnText": "global object", "refSections": [{"refs": [{"id": "ref-for-concept-settings-object-global"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['f58ae318'] = {"dfnID": "f58ae318", "url": "https://html.spec.whatwg.org/C/#integration-with-the-javascript-agent-cluster-formalism", "dfnText": "integration with the javascript agent cluster formalism", "refSections": [{"refs": [{"id": "ref-for-integration-with-the-javascript-agent-cluster-formalism"}], "title": "2.4. Agents and agent clusters"}], "external": true};
+window.dfnpanelData['33549c7a'] = {"dfnID": "33549c7a", "url": "https://html.spec.whatwg.org/C/#is-origin-keyed", "dfnText": "is origin-keyed", "refSections": [{"refs": [{"id": "ref-for-is-origin-keyed"}], "title": "2.4. Agents and agent clusters"}], "external": true};
+window.dfnpanelData['ee4df7df'] = {"dfnID": "ee4df7df", "url": "https://html.spec.whatwg.org/C/#loading-web-pages-supporting-concepts", "dfnText": "loading web pages supporting concepts", "refSections": [{"refs": [{"id": "ref-for-loading-web-pages-supporting-concepts"}], "title": "2.1.2. Document Isolation Policies"}], "external": true};
+window.dfnpanelData['6dc08662'] = {"dfnID": "6dc08662", "url": "https://html.spec.whatwg.org/C/#cross-origin-isolation-logical", "dfnText": "logical", "refSections": [{"refs": [{"id": "ref-for-cross-origin-isolation-logical"}], "title": "2.1.1. Cross-origin-opener-policies"}, {"refs": [{"id": "ref-for-cross-origin-isolation-logical\u2460"}], "title": "2.1.1.1. Browsing context group switches due to cross-origin opener policy"}, {"refs": [{"id": "ref-for-cross-origin-isolation-logical\u2461"}], "title": "2.1.2. Document Isolation Policies"}], "external": true};
+window.dfnpanelData['5155c2d3'] = {"dfnID": "5155c2d3", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#non-secure-context", "dfnText": "non-secure context", "refSections": [{"refs": [{"id": "ref-for-non-secure-context"}], "title": "2.1.2.1. The headers"}], "external": true};
+window.dfnpanelData['c56b026c'] = {"dfnID": "c56b026c", "url": "https://html.spec.whatwg.org/C/#obtain-browsing-context-navigation", "dfnText": "obtain a browsing context to use for a navigation response", "refSections": [{"refs": [{"id": "ref-for-obtain-browsing-context-navigation"}], "title": "2.1.1.1. Browsing context group switches due to cross-origin opener policy"}], "external": true};
+window.dfnpanelData['76cf46eb'] = {"dfnID": "76cf46eb", "url": "https://html.spec.whatwg.org/C/#obtain-similar-origin-window-agent", "dfnText": "obtain a similar-origin window agent", "refSections": [{"refs": [{"id": "ref-for-obtain-similar-origin-window-agent"}], "title": "2.3.1. Shared document creation infrastructure"}, {"refs": [{"id": "ref-for-obtain-similar-origin-window-agent\u2460"}, {"id": "ref-for-obtain-similar-origin-window-agent\u2461"}, {"id": "ref-for-obtain-similar-origin-window-agent\u2462"}, {"id": "ref-for-obtain-similar-origin-window-agent\u2463"}], "title": "2.4. Agents and agent clusters"}], "external": true};
+window.dfnpanelData['98cfc8b6'] = {"dfnID": "98cfc8b6", "url": "https://html.spec.whatwg.org/C/#obtain-similar-origin-window-agent", "dfnText": "obtaining a similar-origin window agent", "refSections": [{"refs": [{"id": "ref-for-obtain-similar-origin-window-agent"}], "title": "2.3.1. Shared document creation infrastructure"}, {"refs": [{"id": "ref-for-obtain-similar-origin-window-agent\u2460"}, {"id": "ref-for-obtain-similar-origin-window-agent\u2461"}, {"id": "ref-for-obtain-similar-origin-window-agent\u2462"}, {"id": "ref-for-obtain-similar-origin-window-agent\u2463"}], "title": "2.4. Agents and agent clusters"}], "external": true};
+window.dfnpanelData['3124aef9'] = {"dfnID": "3124aef9", "url": "https://html.spec.whatwg.org/C/#concept-origin", "dfnText": "origin", "refSections": [{"refs": [{"id": "ref-for-concept-origin"}], "title": "2.1.1.1. Browsing context group switches due to cross-origin opener policy"}, {"refs": [{"id": "ref-for-concept-origin\u2460"}], "title": "2.1.2. Document Isolation Policies"}, {"refs": [{"id": "ref-for-concept-origin\u2461"}], "title": "2.1.3. Policy containers"}, {"refs": [{"id": "ref-for-concept-origin\u2462"}], "title": "2.3.1. Shared document creation infrastructure"}, {"refs": [{"id": "ref-for-concept-origin\u2463"}, {"id": "ref-for-concept-origin\u2464"}], "title": "2.4. Agents and agent clusters"}, {"refs": [{"id": "ref-for-concept-origin\u2465"}, {"id": "ref-for-concept-origin\u2466"}], "title": "3.1. Requests"}, {"refs": [{"id": "ref-for-concept-origin\u2467"}, {"id": "ref-for-concept-origin\u2468"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['0741b07e'] = {"dfnID": "0741b07e", "url": "https://html.spec.whatwg.org/C/#policy-container", "dfnText": "policy container", "refSections": [{"refs": [{"id": "ref-for-policy-container"}], "title": "2.1.3. Policy containers"}, {"refs": [{"id": "ref-for-policy-container\u2460"}], "title": "2.2.1. Browsing contexts"}, {"refs": [{"id": "ref-for-policy-container\u2461"}], "title": "2.3.1. Shared document creation infrastructure"}, {"refs": [{"id": "ref-for-policy-container\u2462"}], "title": "3.1. Requests"}, {"refs": [{"id": "ref-for-policy-container\u2463"}, {"id": "ref-for-policy-container\u2464"}, {"id": "ref-for-policy-container\u2465"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['f26905b5'] = {"dfnID": "f26905b5", "url": "https://html.spec.whatwg.org/C/#same-origin", "dfnText": "same origin", "refSections": [{"refs": [{"id": "ref-for-same-origin"}], "title": "3.1. Requests"}, {"refs": [{"id": "ref-for-same-origin\u2460"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['8af97c1e'] = {"dfnID": "8af97c1e", "url": "https://html.spec.whatwg.org/C/#coop-same-origin-plus-coep", "dfnText": "same-origin-plus-coep", "refSections": [{"refs": [{"id": "ref-for-coop-same-origin-plus-coep"}], "title": "2.1.1. Cross-origin-opener-policies"}, {"refs": [{"id": "ref-for-coop-same-origin-plus-coep\u2460"}], "title": "2.1.1.1. Browsing context group switches due to cross-origin opener policy"}], "external": true};
+window.dfnpanelData['0757a962'] = {"dfnID": "0757a962", "url": "https://html.spec.whatwg.org/multipage/browsers.html#schemelessly-same-site", "dfnText": "schemelessly same site", "refSections": [{"refs": [{"id": "ref-for-schemelessly-same-site"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['fb9bb722'] = {"dfnID": "fb9bb722", "url": "https://html.spec.whatwg.org/multipage/browsers.html#site", "dfnText": "site", "refSections": [{"refs": [{"id": "ref-for-site"}], "title": "2.4. Agents and agent clusters"}], "external": true};
+window.dfnpanelData['c2fcb960'] = {"dfnID": "c2fcb960", "url": "https://html.spec.whatwg.org/C/#top-level-browsing-context", "dfnText": "top-level browsing context", "refSections": [{"refs": [{"id": "ref-for-top-level-browsing-context"}], "title": "2.1.1. Cross-origin-opener-policies"}], "external": true};
+window.dfnpanelData['1d2aa117'] = {"dfnID": "1d2aa117", "url": "https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-tuple", "dfnText": "tuple origin", "refSections": [{"refs": [{"id": "ref-for-concept-origin-tuple"}, {"id": "ref-for-concept-origin-tuple\u2460"}], "title": "2.4. Agents and agent clusters"}], "external": true};
+window.dfnpanelData['33a77dff'] = {"dfnID": "33a77dff", "url": "https://infra.spec.whatwg.org/#map-exists", "dfnText": "map-exists", "refSections": [{"refs": [{"id": "ref-for-map-exists"}, {"id": "ref-for-map-exists\u2460"}], "title": "2.1.2.1. The headers"}], "external": true};
+window.dfnpanelData['0e8de730'] = {"dfnID": "0e8de730", "url": "https://infra.spec.whatwg.org/#tuple", "dfnText": "tuple", "refSections": [{"refs": [{"id": "ref-for-tuple"}, {"id": "ref-for-tuple\u2460"}], "title": "2.4. Agents and agent clusters"}], "external": true};
+window.dfnpanelData['fc5a3214'] = {"dfnID": "fc5a3214", "url": "https://mimesniff.spec.whatwg.org/#parameters", "dfnText": "parameters", "refSections": [{"refs": [{"id": "ref-for-parameters"}], "title": "2.1.2.1. The headers"}], "external": true};
+window.dfnpanelData['7ed9d314'] = {"dfnID": "7ed9d314", "url": "https://w3c.github.io/reporting/#generate-and-queue-a-report", "dfnText": "generate and queue a report", "refSections": [{"refs": [{"id": "ref-for-generate-and-queue-a-report"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['f9433a40'] = {"dfnID": "f9433a40", "url": "https://httpwg.org/specs/rfc8941.html#specify", "dfnText": "structured headers", "refSections": [{"refs": [{"id": "ref-for-specify"}], "title": "2.1.2.1. The headers"}], "external": true};
+window.dfnpanelData['04dc11d2'] = {"dfnID": "04dc11d2", "url": "https://httpwg.org/specs/rfc8941.html#token", "dfnText": "token", "refSections": [{"refs": [{"id": "ref-for-token"}, {"id": "ref-for-token\u2460"}], "title": "2.1.2.1. The headers"}], "external": true};
+window.dfnpanelData['3a711be7'] = {"dfnID": "3a711be7", "url": "https://url.spec.whatwg.org/#concept-url-scheme", "dfnText": "scheme", "refSections": [{"refs": [{"id": "ref-for-concept-url-scheme"}, {"id": "ref-for-concept-url-scheme\u2460"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['dcffbccd'] = {"dfnID": "dcffbccd", "url": "https://url.spec.whatwg.org/#concept-url", "dfnText": "url", "refSections": [{"refs": [{"id": "ref-for-concept-url"}], "title": "2.1.3. Policy containers"}, {"refs": [{"id": "ref-for-concept-url\u2460"}, {"id": "ref-for-concept-url\u2461"}, {"id": "ref-for-concept-url\u2462"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
+window.dfnpanelData['05af0c3f'] = {"dfnID": "05af0c3f", "url": "https://url.spec.whatwg.org/#valid-url-string", "dfnText": "valid url string", "refSections": [{"refs": [{"id": "ref-for-valid-url-string"}], "title": "2.1.2.1. The headers"}], "external": true};
+window.dfnpanelData['dip-value'] = {"dfnID": "dip-value", "url": "#dip-value", "dfnText": "document isolation policy value", "refSections": [{"refs": [{"id": "ref-for-dip-value"}, {"id": "ref-for-dip-value\u2460"}], "title": "2.1.2. Document Isolation Policies"}, {"refs": [{"id": "ref-for-dip-value\u2461"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-value\u2462"}], "title": "3.1. Requests"}, {"refs": [{"id": "ref-for-dip-value\u2463"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['dip-none'] = {"dfnID": "dip-none", "url": "#dip-none", "dfnText": "none", "refSections": [{"refs": [{"id": "ref-for-dip-none"}, {"id": "ref-for-dip-none\u2460"}, {"id": "ref-for-dip-none\u2461"}], "title": "2.1.2. Document Isolation Policies"}, {"refs": [{"id": "ref-for-dip-none\u2462"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['dip-isolate-and-require-corp'] = {"dfnID": "dip-isolate-and-require-corp", "url": "#dip-isolate-and-require-corp", "dfnText": "isolate-and-require-corp", "refSections": [{"refs": [{"id": "ref-for-dip-isolate-and-require-corp"}, {"id": "ref-for-dip-isolate-and-require-corp\u2460"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-isolate-and-require-corp\u2461"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['dip-isolate-and-credentialless'] = {"dfnID": "dip-isolate-and-credentialless", "url": "#dip-isolate-and-credentialless", "dfnText": "isolate-and-credentialless", "refSections": [{"refs": [{"id": "ref-for-dip-isolate-and-credentialless"}, {"id": "ref-for-dip-isolate-and-credentialless\u2460"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-isolate-and-credentialless\u2461"}], "title": "3.1. Requests"}, {"refs": [{"id": "ref-for-dip-isolate-and-credentialless\u2462"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['dip-struct'] = {"dfnID": "dip-struct", "url": "#dip-struct", "dfnText": "document isolation policy", "refSections": [{"refs": [{"id": "ref-for-dip-struct"}], "title": "2.1.2. Document Isolation Policies"}, {"refs": [{"id": "ref-for-dip-struct\u2460"}, {"id": "ref-for-dip-struct\u2461"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-struct\u2462"}, {"id": "ref-for-dip-struct\u2463"}, {"id": "ref-for-dip-struct\u2464"}], "title": "2.1.3. Policy containers"}, {"refs": [{"id": "ref-for-dip-struct\u2465"}], "title": "2.2.2. Grouping of browsing contexts"}], "external": false};
+window.dfnpanelData['dip-struct-value'] = {"dfnID": "dip-struct-value", "url": "#dip-struct-value", "dfnText": "value", "refSections": [{"refs": [{"id": "ref-for-dip-struct-value"}], "title": "2.1.2. Document Isolation Policies"}, {"refs": [{"id": "ref-for-dip-struct-value\u2460"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-struct-value\u2461"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['dip-reporting-endpoint'] = {"dfnID": "dip-reporting-endpoint", "url": "#dip-reporting-endpoint", "dfnText": "reporting endpoint", "refSections": [{"refs": [{"id": "ref-for-dip-reporting-endpoint"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-reporting-endpoint\u2460"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['dip-report-only-value'] = {"dfnID": "dip-report-only-value", "url": "#dip-report-only-value", "dfnText": "report-only value", "refSections": [{"refs": [{"id": "ref-for-dip-report-only-value"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-report-only-value\u2460"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['dip-report-only-endpoint'] = {"dfnID": "dip-report-only-endpoint", "url": "#dip-report-only-endpoint", "dfnText": "report-only reporting endpoint", "refSections": [{"refs": [{"id": "ref-for-dip-report-only-endpoint"}], "title": "2.1.2.1. The headers"}, {"refs": [{"id": "ref-for-dip-report-only-endpoint\u2460"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['obtain-coi-key'] = {"dfnID": "obtain-coi-key", "url": "#obtain-coi-key", "dfnText": "obtain a cross-origin agent cluster isolation\nkey", "refSections": [{"refs": [{"id": "ref-for-obtain-coi-key"}], "title": "2.1.3. Policy containers"}], "external": false};
+window.dfnpanelData['obtain-dip'] = {"dfnID": "obtain-dip", "url": "#obtain-dip", "dfnText": "obtain a document isolation policy", "refSections": [{"refs": [{"id": "ref-for-obtain-dip"}], "title": "2.1.3. Policy containers"}], "external": false};
+window.dfnpanelData['policy-container-dip'] = {"dfnID": "policy-container-dip", "url": "#policy-container-dip", "dfnText": "document isolation policy", "refSections": [{"refs": [{"id": "ref-for-policy-container-dip"}, {"id": "ref-for-policy-container-dip\u2460"}, {"id": "ref-for-policy-container-dip\u2461"}, {"id": "ref-for-policy-container-dip\u2462"}], "title": "2.1.3. Policy containers"}, {"refs": [{"id": "ref-for-policy-container-dip\u2463"}], "title": "3.1. Requests"}, {"refs": [{"id": "ref-for-policy-container-dip\u2464"}, {"id": "ref-for-policy-container-dip\u2465"}, {"id": "ref-for-policy-container-dip\u2466"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['policy-container-coi-key'] = {"dfnID": "policy-container-coi-key", "url": "#policy-container-coi-key", "dfnText": "agent cluster cross-origin isolation\nkey", "refSections": [{"refs": [{"id": "ref-for-policy-container-coi-key"}, {"id": "ref-for-policy-container-coi-key\u2460"}, {"id": "ref-for-policy-container-coi-key\u2461"}], "title": "2.1.3. Policy containers"}, {"refs": [{"id": "ref-for-policy-container-coi-key\u2462"}], "title": "2.2.1. Browsing contexts"}, {"refs": [{"id": "ref-for-policy-container-coi-key\u2463"}], "title": "2.2.2. Grouping of browsing contexts"}, {"refs": [{"id": "ref-for-policy-container-coi-key\u2464"}], "title": "2.3.1. Shared document creation infrastructure"}], "external": false};
+window.dfnpanelData['bcg-coi-key'] = {"dfnID": "bcg-coi-key", "url": "#bcg-coi-key", "dfnText": "agent cluster\ncross-origin isolation key", "refSections": [{"refs": [{"id": "ref-for-bcg-coi-key"}], "title": "2.1.1. Cross-origin-opener-policies"}, {"refs": [{"id": "ref-for-bcg-coi-key\u2460"}], "title": "2.1.1.1. Browsing context group switches due to cross-origin opener policy"}, {"refs": [{"id": "ref-for-bcg-coi-key\u2461"}], "title": "2.1.3. Policy containers"}, {"refs": [{"id": "ref-for-bcg-coi-key\u2462"}], "title": "2.4. Agents and agent clusters"}], "external": false};
+window.dfnpanelData['coi-agent-cluster-key'] = {"dfnID": "coi-agent-cluster-key", "url": "#coi-agent-cluster-key", "dfnText": "agent cluster cross-origin isolation\nkey", "refSections": [{"refs": [{"id": "ref-for-coi-agent-cluster-key"}], "title": "2.1.2. Document Isolation Policies"}, {"refs": [{"id": "ref-for-coi-agent-cluster-key\u2460"}, {"id": "ref-for-coi-agent-cluster-key\u2461"}], "title": "2.1.3. Policy containers"}, {"refs": [{"id": "ref-for-coi-agent-cluster-key\u2462"}, {"id": "ref-for-coi-agent-cluster-key\u2463"}], "title": "2.2.2. Grouping of browsing contexts"}, {"refs": [{"id": "ref-for-coi-agent-cluster-key\u2464"}, {"id": "ref-for-coi-agent-cluster-key\u2465"}, {"id": "ref-for-coi-agent-cluster-key\u2466"}, {"id": "ref-for-coi-agent-cluster-key\u2467"}], "title": "2.4. Agents and agent clusters"}], "external": false};
+window.dfnpanelData['document-isolation-policy-allows-credentials'] = {"dfnID": "document-isolation-policy-allows-credentials", "url": "#document-isolation-policy-allows-credentials", "dfnText": "Document-Isolation-Policy allows credentials", "refSections": [{"refs": [{"id": "ref-for-document-isolation-policy-allows-credentials"}], "title": "3.3. HTTP-network-or-cache fetch"}], "external": false};
+window.dfnpanelData['corp-check-result'] = {"dfnID": "corp-check-result", "url": "#corp-check-result", "dfnText": "cross-origin resource policy internal check result", "refSections": [{"refs": [{"id": "ref-for-corp-check-result"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['corp-check-allowed'] = {"dfnID": "corp-check-allowed", "url": "#corp-check-allowed", "dfnText": "allowed", "refSections": [{"refs": [{"id": "ref-for-corp-check-allowed"}, {"id": "ref-for-corp-check-allowed\u2460"}, {"id": "ref-for-corp-check-allowed\u2461"}, {"id": "ref-for-corp-check-allowed\u2462"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['corp-check-blocked'] = {"dfnID": "corp-check-blocked", "url": "#corp-check-blocked", "dfnText": "blocked", "refSections": [{"refs": [{"id": "ref-for-corp-check-blocked"}, {"id": "ref-for-corp-check-blocked\u2460"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['corp-check-blocked-coep'] = {"dfnID": "corp-check-blocked-coep", "url": "#corp-check-blocked-coep", "dfnText": "blocked-by-coep", "refSections": [{"refs": [{"id": "ref-for-corp-check-blocked-coep"}, {"id": "ref-for-corp-check-blocked-coep\u2460"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['corp-check-blocked-dip'] = {"dfnID": "corp-check-blocked-dip", "url": "#corp-check-blocked-dip", "dfnText": "blocked-by-dip", "refSections": [{"refs": [{"id": "ref-for-corp-check-blocked-dip"}, {"id": "ref-for-corp-check-blocked-dip\u2460"}, {"id": "ref-for-corp-check-blocked-dip\u2461"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['corp-check-blocked-coep-dip'] = {"dfnID": "corp-check-blocked-coep-dip", "url": "#corp-check-blocked-coep-dip", "dfnText": "blocked-by-coep-and-dip", "refSections": [{"refs": [{"id": "ref-for-corp-check-blocked-coep-dip"}, {"id": "ref-for-corp-check-blocked-coep-dip\u2460"}, {"id": "ref-for-corp-check-blocked-coep-dip\u2461"}, {"id": "ref-for-corp-check-blocked-coep-dip\u2462"}, {"id": "ref-for-corp-check-blocked-coep-dip\u2463"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+window.dfnpanelData['queue-a-document-isolation-policy-corp-violation-report'] = {"dfnID": "queue-a-document-isolation-policy-corp-violation-report", "url": "#queue-a-document-isolation-policy-corp-violation-report", "dfnText": "queue a document isolation policy CORP violation report", "refSections": [{"refs": [{"id": "ref-for-queue-a-document-isolation-policy-corp-violation-report"}, {"id": "ref-for-queue-a-document-isolation-policy-corp-violation-report\u2460"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": false};
+</script>
+<script>/* Boilerplate: script-dom-helper */
+function query(sel) { return document.querySelector(sel); }
+
+function queryAll(sel) { return [...document.querySelectorAll(sel)]; }
+
+function iter(obj) {
+	if(!obj) return [];
+	var it = obj[Symbol.iterator];
+	if(it) return it;
+	return Object.entries(obj);
+}
+
+function mk(tagname, attrs, ...children) {
+	const el = document.createElement(tagname);
+	for(const [k,v] of iter(attrs)) {
+		if(k.slice(0,3) == "_on") {
+			const eventName = k.slice(3);
+			el.addEventListener(eventName, v);
+		} else if(k[0] == "_") {
+			// property, not attribute
+			el[k.slice(1)] = v;
+		} else {
+			if(v === false || v == null) {
+        continue;
+      } else if(v === true) {
+        el.setAttribute(k, "");
+        continue;
+      } else {
+  			el.setAttribute(k, v);
+      }
+		}
+	}
+	append(el, children);
+	return el;
+}
+
+/* Create shortcuts for every known HTML element */
+[
+  "a",
+  "abbr",
+  "acronym",
+  "address",
+  "applet",
+  "area",
+  "article",
+  "aside",
+  "audio",
+  "b",
+  "base",
+  "basefont",
+  "bdo",
+  "big",
+  "blockquote",
+  "body",
+  "br",
+  "button",
+  "canvas",
+  "caption",
+  "center",
+  "cite",
+  "code",
+  "col",
+  "colgroup",
+  "datalist",
+  "dd",
+  "del",
+  "details",
+  "dfn",
+  "dialog",
+  "div",
+  "dl",
+  "dt",
+  "em",
+  "embed",
+  "fieldset",
+  "figcaption",
+  "figure",
+  "font",
+  "footer",
+  "form",
+  "frame",
+  "frameset",
+  "head",
+  "header",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "hr",
+  "html",
+  "i",
+  "iframe",
+  "img",
+  "input",
+  "ins",
+  "kbd",
+  "label",
+  "legend",
+  "li",
+  "link",
+  "main",
+  "map",
+  "mark",
+  "meta",
+  "meter",
+  "nav",
+  "nobr",
+  "noscript",
+  "object",
+  "ol",
+  "optgroup",
+  "option",
+  "output",
+  "p",
+  "param",
+  "pre",
+  "progress",
+  "q",
+  "s",
+  "samp",
+  "script",
+  "section",
+  "select",
+  "small",
+  "source",
+  "span",
+  "strike",
+  "strong",
+  "style",
+  "sub",
+  "summary",
+  "sup",
+  "table",
+  "tbody",
+  "td",
+  "template",
+  "textarea",
+  "tfoot",
+  "th",
+  "thead",
+  "time",
+  "title",
+  "tr",
+  "u",
+  "ul",
+  "var",
+  "video",
+  "wbr",
+  "xmp",
+].forEach(tagname=>{
+	mk[tagname] = (...args) => mk(tagname, ...args);
+});
+
+function* nodesFromChildList(children) {
+	for(const child of children.flat(Infinity)) {
+		if(child instanceof Node) {
+			yield child;
+		} else {
+			yield new Text(child);
+		}
+	}
+}
+function append(el, ...children) {
+	for(const child of nodesFromChildList(children)) {
+		if(el instanceof Node) el.appendChild(child);
+		else el.push(child);
+	}
+	return el;
+}
+
+function insertAfter(el, ...children) {
+	for(const child of nodesFromChildList(children)) {
+		el.parentNode.insertBefore(child, el.nextSibling);
+	}
+	return el;
+}
+
+function clearContents(el) {
+	el.innerHTML = "";
+	return el;
+}
+
+function parseHTML(markup) {
+	if(markup.toLowerCase().trim().indexOf('<!doctype') === 0) {
+		const doc = document.implementation.createHTMLDocument("");
+		doc.documentElement.innerHTML = markup;
+		return doc;
+	} else {
+		const el = mk.template({});
+		el.innerHTML = markup;
+		return el.content;
+	}
+}
+</script>
