@@ -102,6 +102,9 @@ urlPrefix: https://html.spec.whatwg.org/C/; spec: html
   text: create a new top-level browsing context and document; type:dfn; url:creating-a-new-top-level-browsing-context
   text: create a new top-level traversable; type:dfn; url:creating-a-new-top-level-traversable
   text: Cross-Origin-Embedder-Policy; type: dfn; url: coep
+  text: coep-unsafe-none; type: dfn; url: coep-unsafe-none
+  text: coep-credentialless; type: dfn; url: coep-credentialless
+  text: coep-require-corp; type: dfn; url: coep-require-corp
   text: Cross-Origin-Opener-Policy; type: dfn; url: cross-origin-opener-policies
   text: cross-origin opener policy; type: dfn; url: cross-origin-opener-policy
   text: cross-origin-opener-policy-value; type: dfn; url: cross-origin-opener-policy-value
@@ -175,16 +178,27 @@ urlPrefix: https://httpwg.org/specs/rfc8941.html; spec: Structured-Fields
 
 urlPrefix: https://fetch.spec.whatwg.org/; spec: Fetch
   text: cross-origin-resource-policy; type:dfn; url:http-cross-origin-resource-policy
+  text: cross-origin resource policy internal check; type:dfn; url:cross-origin-resource-policy-internal-check
+  text: http-network-or-cache fetch; type:dfn; url:concept-http-network-or-cache-fetch
+  text: queue a cross-origin embedder policy corp violation report; type:dfn; url:queue-a-cross-origin-embedder-policy-corp-violation-report
+  text: request-includes-credentials; type:dfn; url:response-request-includes-credentials
+  text: redirect-tainted origin; type:dfn; url:concept-request-tainted-origin
 
 </pre>
 
 <pre class="link-defaults">
   spec:fetch; type:dfn; for:/; text:response
+  spec:fetch; type:dfn; text:client
+  spec:fetch; type:dfn; text:current url
+  spec:fetch; type:dfn; text:mode
+  spec:fetch; type:dfn; for:Request; text:request
   spec:fetch; type:dfn; for:response; text:header list
   spec:html; type:dfn; for:/; text:origin
   spec:html; type:dfn; for:Window; text:browsing context
   spec:html; type:dfn; text:environment
+  spec:html; type:dfn; for:environment settings object; text:global object
   spec:url; type:dfn; for:/; text:url
+  spec:url; type:dfn; text:scheme
 </pre>
 
 <style>
@@ -526,6 +540,7 @@ Modify step 3 of the [=obtain a similar-origin window agent=] algorithm:
 </div>
 
 Modify steps 6.2 and 6.3 of the [=obtain a similar-origin window agent=] algorithm:
+
 <div class="monkey-patch">
 
 6.2 If *key* has an [=coi-agent-cluster-key|agent cluster cross-origin
@@ -534,5 +549,183 @@ isolation key=], set *agentCluster*'s [=cross-origin isolation mode=] to
 [=cross-origin isolation mode=].
 
 6.3 Set *agentCluster*'s [=is origin-keyed=] to false if *key* equals *site*; otherwise true.
+
+</div>
+
+# Integration with Fetch # {#dip-fetch}
+
+This section defines a monkey-patch over [[!Fetch]].
+
+## Requests ## {#dip-requests}
+
+Add a new algorithm to the [=Requests=] part of Fetch:
+
+<div class="monkey-patch">
+
+To check if <dfn>Document-Isolation-Policy allows credentials</dfn>, given a
+[=request=] *request*, run these steps:
+1. If *request*’s [=mode=] is not "no-cors", then return true.
+2. If *request*’s [=client=] is null, then return true.
+3. If *request*’s [=client=]’s [=policy container=]’s
+   [=policy-container-dip|document-isolation-policy=]’s [=dip-value|value=] is not
+   "[=dip-isolate-and-credentialless|isolate-and-credentialless=]", then return true.
+4. If *request*’s [=origin=] is [=same origin=] with *request*’s [=current
+   URL=]’s [=origin=] and *request* does not have a [=redirect-tainted origin=],
+   then return true.
+5. Return false.
+
+</div>
+
+## 'Cross-Origin-Resource-Policy' header ## {#dip-corp}
+
+Add a new enum definition to the [=Cross-Origin-Resource-Policy=] section of Fetch:
+
+<div class="monkey-patch">
+
+A <dfn lt="corp-check-result">cross-origin resource policy internal check result</dfn>
+is one of five values:
+* "<dfn lt="corp-check-allowed">allowed</dfn>"
+* "<dfn lt="corp-check-blocked">blocked</dfn>"
+* "<dfn lt="corp-check-blocked-coep">blocked-by-coep</dfn>"
+* "<dfn lt="corp-check-blocked-dip">blocked-by-dip</dfn>"
+* "<dfn lt="corp-check-blocked-coep-dip">blocked-by-coep-and-dip</dfn>"
+
+</div>
+
+Modify the [=cross-origin resource policy check=] algorithm:
+
+<div class="monkey-patch">
+
+4. Let *documentIsolationPolicy* be *settingsObject*’s [=policy container=]’s
+   [=policy-container-dip|document-isolation-policy=].
+5. Let *reportOnlyCheck* be the the result of the [=cross-origin resource
+   policy internal check=] with *origin*,  *embedderPolicy*’s
+   [=embedder-policy-report-only-value|report only value=],
+   *documentIsolationPolicy*’s [=dip-report-only-value|report only value=],
+   *response*, and *forNavigation*. 
+6. If *reportOnlyCheck* is "[=corp-check-blocked-coep|blocked-by-coep=]" or
+   "[=corp-check-blocked-coep-dip|blocked-by-coep-and-dip=]", then [=queue a
+   cross-origin embedder policy CORP violation report=] with *response*,
+   *settingsObject*, *destination*, and true.
+7. If *reportOnlyCheck* is "[=corp-check-blocked-dip|blocked-by-dip=]" or
+   "[=corp-check-blocked-coep-dip|blocked-by-coep-and-dip=]", then [=queue a
+   document isolation policy CORP violation report=] with *response*,
+   *settingsObject*, *destination*, and true.
+8. Let *check* be the the result of the [=cross-origin resource
+   policy internal check=] with *origin*,  *embedderPolicy*’s
+   [=embedder-policy-value-2|value=], *documentIsolationPolicy*’s
+   [=dip-struct-value|report value=], *response*, and *forNavigation*. 
+9. If *check* is "[=corp-check-allowed|allowed=]", then return **allowed**.
+10. If *check* is "[=corp-check-blocked-coep|blocked-by-coep=]" or
+    "[=corp-check-blocked-coep-dip|blocked-by-coep-and-dip=]", then [=queue a
+    cross-origin embedder policy CORP violation report=] with *response*,
+    *settingsObject*, *destination*, and false.
+11. If *reportOnlyCheck* is "[=corp-check-blocked-dip|blocked-by-dip=]" or
+    "[=corp-check-blocked-coep-dip|blocked-by-coep-and-dip=]", then [=queue a
+    document isolation policy CORP violation report=] with *response*,
+    *settingsObject*, *destination*, and false.
+12. Return **blocked**.
+
+</div>
+
+Modify the [=cross-origin resource policy internal check=] algorithm definition:
+
+<div class="monkey-patch">
+
+To perform a [=cross-origin resource policy internal check=], given an [=origin=]
+*origin*, an [=embedder policy value=] *embedderPolicyValue*, a
+[=dip-value|document isolation policy value=] *documentIsolationPolicyValue*, a
+[=response=] *response*, and a boolean *forNavigation*, run these steps:
+
+</div>
+
+Modify the [=cross-origin resource policy internal check=] algorithm:
+
+<div class="monkey-patch">
+
+4. Let *checkResult* be a [=corp-check-result|cross-origin resource policy
+   internal check result=] with value "[=corp-check-blocked|blocked=]".
+6. If *policy* is null, then:
+   1. Let *upgradeDueToCOEP* be false.
+   2. Let *upgradeDueToDIP* be false.
+   3. Switch on *embedderPolicyValue*:
+      * "[=coep-unsafe-none|unsafe-none=]"
+        1. Do nothing.
+      * "[=coep-credentialless|credentialless=]"
+        1. Set *upgradeDueToCOEP* to true if:
+           * *response*’s [=request-includes-credentials=] is true, or
+           * *forNavigation* is true.
+      * "[=coep-require-corp|require-corp=]"
+        1. Set *upgradeDueToCOEP* to true.
+   4. Switch on *documentIsolationPolicyValue*:
+      * "[=dip-none|dip-none=]"
+        1. Do nothing.
+      * "[=dip-isolate-and-credentialless|isolate-and-credentialless=]"
+        1. Set *upgradeDueToDIP* to true if *response*’s
+           [=request-includes-credentials=] is true.
+      * "[=dip-isolate-and-require-corp|isolate-and-require-corp=]"
+        1. Set *upgradeDueToDIP* to true.
+   5. If *upgradeDueToCOEP* or *upgradeDueToDIP* is true, set *policy* to
+      'same-origin'.
+   6. If *upgradeDueToCOEP* is true, then:
+      1. If *upgradeDueToDIP* is true, then set *checkResult* to
+         "[=corp-check-blocked-coep-dip|blocked-by-coep-and-dip=]".
+      2. Otherwise, set *checkResult* to
+         "[=corp-check-blocked|blocked-by-coep=]". 
+   7. Otherwise, if *upgradeDueToDIP* is true, then set *checkResult* to
+         "[=corp-check-blocked-dip|blocked-by-dip=]".
+7. Switch on *policy*:
+   * null
+   * `cross-origin`
+     1. Set *checkResult* to "[=corp-check-allowed|allowed=]".
+   * `same-origin`
+     1. If *origin* is [=same origin=] with *response*’s [=URL=]’s [=origin=],
+        then set *checkResult* to "[=corp-check-allowed|allowed=]".
+   * `same-site`
+     1. If all of the following are true
+        * *origin* is [=schemelessly same site=] with *response*’s [=URL=]’s
+          *origin*
+        * *origin*’s [=scheme=] is "https" or *response*’s [=URL=]’s [=scheme=]
+          is not "https"
+     2. then set *checkResult* to "[=corp-check-allowed|allowed=]".
+8. Return *checkResult*.
+
+</div>
+
+Add a new algorithm to the [=Cross-Origin-Resource-Policy=] section of Fetch:
+
+<div class="monkey-patch">
+
+To <dfn>queue a document isolation policy CORP violation report</dfn>, given a
+[=response=] *response*, an [=environment settings object=] *settingsObject*, a
+string *destination*, and a boolean *reportOnly*, run these steps:
+1. Let *endpoint* be *settingsObject*’s [=policy container=]’s
+   [=policy-container-dip|document-isolation-policy=]’s
+   [=dip-report-only-endpoint|report only reporting endpoint=] if *reportOnly*
+   is true and *settingsObject*’s [=policy container=]’s
+   [=policy-container-dip|document-isolation-policy=]’s
+   [=dip-reporting-endpoint|reporting endpoint=] otherwise.
+2. Let *serializedURL* be the result of [=serializing a response URL for
+   reporting=] with *response*.
+3. Let *disposition* be "reporting" if reportOnly is true; otherwise "enforce".
+4. Let *body* be a new object containing the following properties:
+   <pre class=simpledef>
+   "type": "corp"
+   "blockedURL": serializedURL
+   "destination": destination
+   "disposition": disposition
+   </pre>
+5. [=Generate and queue a report=] for *settingsObject*’s [=global object=] given the "dip", *endpoint*, and *body*. 
+
+</div>
+
+## HTTP-network-or-cache fetch ## {#dip-http-fetch}
+
+Add a step 8.5 to the [=HTTP-network-or-cache fetch=] algorithm:
+
+<div class="monkey-patch">
+
+5. If [=Document-Isolation-Policy allows credentials=] with *request* returns
+   false, then set *includeCredentials* to false.
 
 </div>
