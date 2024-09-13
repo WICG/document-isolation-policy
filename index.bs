@@ -124,7 +124,7 @@ urlPrefix: https://html.spec.whatwg.org/C/; spec: html
   text: Grouping of browsing contexts; type:dfn; url:grouping-of-browsing-contexts
   text: Infrastructure for sequences of documents; type:dfn; url:infrastructure-for-sequences-of-documents
   text: Integration with the JavaScript agent cluster formalism; type:dfn; url:integration-with-the-javascript-agent-cluster-formalism
-  text: is origin-keyed; type:dfn; url:is origin-keyed
+  text: is origin-keyed; type:dfn; url:is-origin-keyed
   text: loading web pages supporting concepts; type:dfn; url:loading-web-pages-supporting-concepts
   text: logical; type:dfn; url:cross-origin-isolation-logical
   text: location-getownproperty; type:dfn; url:location-getownproperty
