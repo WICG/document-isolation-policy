@@ -731,3 +731,30 @@ Add a step 8.5 to the [=HTTP-network-or-cache fetch=] algorithm:
    false, then set *includeCredentials* to false.
 
 </div>
+
+# Security considerations # {#dip-security}
+
+<em>This section is not normative.</em>
+
+Document-Isolation-Policy is a security API whose goal is to give access to
+potentially dangerous APIs (like Shared Array Buffers) in a safe manner. In
+order to do so, Document-Isolation-Policy relies on the user agent backing the
+agent cluster separation with effective process separation. If the user agent
+is not able to do so (e.g. it cannot support Out-of-Process Iframes), the user
+agent should set a cross-origin isolation mode of "logical" for documents with
+Document-Isolation-Policy. This will prevent the document from getting access
+to the dangerous APIs gated behind cross-origin isolation.
+
+This choice of cross-origin isolation mode should be a static choice made for
+all origins on a user's machine, to avoid leaking the state of other documents on
+the user's machine.
+
+For a longer discussion of the threat model this API adresses, please refer to
+the [[explainer]].
+
+# Privacy considerations # {#dip-privacy}
+
+<em>This section is not normative.</em>
+
+No additional privacy concerns beyond the risks mentionned in the security
+considerations section.

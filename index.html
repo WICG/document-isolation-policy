@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://github.com/WICG/document-isolation-policy" rel="canonical">
-  <meta content="70965a0ed78a4f3bfcb1ad6bc1e38f37a39aa232" name="document-revision">
+  <meta content="b7145a5b0af70d5279979653541f5e7fe6b6125a" name="document-revision">
 <style>
 .monkey-patch {
     padding: .5em;
@@ -677,7 +677,7 @@ dd:not(:last-child) > .wpt-tests-block:not([open]):last-child {
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Document-Isolation-Policy</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2024-09-13">13 September 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2024-09-18">18 September 2024</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -757,6 +757,8 @@ dd:not(:last-child) > .wpt-tests-block:not([open]):last-child {
       <li><a href="#dip-corp"><span class="secno">3.2</span> <span class="content">'Cross-Origin-Resource-Policy' header</span></a>
       <li><a href="#dip-http-fetch"><span class="secno">3.3</span> <span class="content">HTTP-network-or-cache fetch</span></a>
      </ol>
+    <li><a href="#dip-security"><span class="secno">4</span> <span class="content">Security considerations</span></a>
+    <li><a href="#dip-privacy"><span class="secno">5</span> <span class="content">Privacy considerations</span></a>
     <li>
      <a href="#index"><span class="secno"></span> <span class="content">Index</span></a>
      <ol class="toc">
@@ -1027,7 +1029,7 @@ cross-origin isolation key</a>.</p>
    <div class="monkey-patch">
     <p>6.2 If <em>key</em> has an <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key⑦">agent cluster cross-origin
 isolation key</a>, set <em>agentCluster</em>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#bcg-cross-origin-isolation" id="ref-for-bcg-cross-origin-isolation③">cross-origin isolation mode</a> to <em>key</em>'s <a data-link-type="dfn" href="#coi-agent-cluster-key" id="ref-for-coi-agent-cluster-key⑧">agent cluster cross-origin isolation key</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#bcg-cross-origin-isolation" id="ref-for-bcg-cross-origin-isolation④">cross-origin isolation mode</a>.</p>
-    <p>6.3 Set <em>agentCluster</em>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#is origin-keyed" id="ref-for-is origin-keyed">is origin-keyed</a> to false if <em>key</em> equals <em>site</em>; otherwise true.</p>
+    <p>6.3 Set <em>agentCluster</em>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/C/#is-origin-keyed" id="ref-for-is-origin-keyed">is origin-keyed</a> to false if <em>key</em> equals <em>site</em>; otherwise true.</p>
    </div>
    <h2 class="heading settled" data-level="3" id="dip-fetch"><span class="secno">3. </span><span class="content">Integration with Fetch</span><a class="self-link" href="#dip-fetch"></a></h2>
    <p>This section defines a monkey-patch over <a data-link-type="biblio" href="#biblio-fetch" title="Fetch Standard">[Fetch]</a>.</p>
@@ -1264,6 +1266,25 @@ string <em>destination</em>, and a boolean <em>reportOnly</em>, run these steps:
  false, then set <em>includeCredentials</em> to false.</p>
     </ol>
    </div>
+   <h2 class="heading settled" data-level="4" id="dip-security"><span class="secno">4. </span><span class="content">Security considerations</span><a class="self-link" href="#dip-security"></a></h2>
+   <p><em>This section is not normative.</em></p>
+   <p>Document-Isolation-Policy is a security API whose goal is to give access to
+potentially dangerous APIs (like Shared Array Buffers) in a safe manner. In
+order to do so, Document-Isolation-Policy relies on the user agent backing the
+agent cluster separation with effective process separation. If the user agent
+is not able to do so (e.g. it cannot support Out-of-Process Iframes), the user
+agent should set a cross-origin isolation mode of "logical" for documents with
+Document-Isolation-Policy. This will prevent the document from getting access
+to the dangerous APIs gated behind cross-origin isolation.</p>
+   <p>This choice of cross-origin isolation mode should be a static choice made for
+all origins on a user’s machine, to avoid leaking the state of other documents on
+the user’s machine.</p>
+   <p>For a longer discussion of the threat model this API adresses, please refer to
+the <a data-link-type="biblio" href="#biblio-explainer" title="Document-Isolation-Policy explainer">[explainer]</a>.</p>
+   <h2 class="heading settled" data-level="5" id="dip-privacy"><span class="secno">5. </span><span class="content">Privacy considerations</span><a class="self-link" href="#dip-privacy"></a></h2>
+   <p><em>This section is not normative.</em></p>
+   <p>No additional privacy concerns beyond the risks mentionned in the security
+considerations section.</p>
   </main>
 <script src="https://www.w3.org/scripts/TR/2021/fixup.js"></script>
   <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
@@ -1352,7 +1373,7 @@ string <em>destination</em>, and a boolean <em>reportOnly</em>, run these steps:
      <li><span class="dfn-paneled" id="3e12e042">environment settings object</span>
      <li><span class="dfn-paneled" id="8a30477b">global object</span>
      <li><span class="dfn-paneled" id="f58ae318">integration with the javascript agent cluster formalism</span>
-     <li><span class="dfn-paneled" id="f95f263c">is origin-keyed</span>
+     <li><span class="dfn-paneled" id="33549c7a">is origin-keyed</span>
      <li><span class="dfn-paneled" id="ee4df7df">loading web pages supporting concepts</span>
      <li><span class="dfn-paneled" id="6dc08662">logical</span>
      <li><span class="dfn-paneled" id="5155c2d3">non-secure context</span>
@@ -1775,7 +1796,7 @@ window.dfnpanelData['77a2dc1b'] = {"dfnID": "77a2dc1b", "url": "https://html.spe
 window.dfnpanelData['3e12e042'] = {"dfnID": "3e12e042", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#environment-settings-object", "dfnText": "environment settings object", "refSections": [{"refs": [{"id": "ref-for-environment-settings-object"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
 window.dfnpanelData['8a30477b'] = {"dfnID": "8a30477b", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-global", "dfnText": "global object", "refSections": [{"refs": [{"id": "ref-for-concept-settings-object-global"}], "title": "3.2. 'Cross-Origin-Resource-Policy' header"}], "external": true};
 window.dfnpanelData['f58ae318'] = {"dfnID": "f58ae318", "url": "https://html.spec.whatwg.org/C/#integration-with-the-javascript-agent-cluster-formalism", "dfnText": "integration with the javascript agent cluster formalism", "refSections": [{"refs": [{"id": "ref-for-integration-with-the-javascript-agent-cluster-formalism"}], "title": "2.4. Agents and agent clusters"}], "external": true};
-window.dfnpanelData['f95f263c'] = {"dfnID": "f95f263c", "url": "https://html.spec.whatwg.org/C/#is origin-keyed", "dfnText": "is origin-keyed", "refSections": [{"refs": [{"id": "ref-for-is origin-keyed"}], "title": "2.4. Agents and agent clusters"}], "external": true};
+window.dfnpanelData['33549c7a'] = {"dfnID": "33549c7a", "url": "https://html.spec.whatwg.org/C/#is-origin-keyed", "dfnText": "is origin-keyed", "refSections": [{"refs": [{"id": "ref-for-is-origin-keyed"}], "title": "2.4. Agents and agent clusters"}], "external": true};
 window.dfnpanelData['ee4df7df'] = {"dfnID": "ee4df7df", "url": "https://html.spec.whatwg.org/C/#loading-web-pages-supporting-concepts", "dfnText": "loading web pages supporting concepts", "refSections": [{"refs": [{"id": "ref-for-loading-web-pages-supporting-concepts"}], "title": "2.1.2. Document Isolation Policies"}], "external": true};
 window.dfnpanelData['6dc08662'] = {"dfnID": "6dc08662", "url": "https://html.spec.whatwg.org/C/#cross-origin-isolation-logical", "dfnText": "logical", "refSections": [{"refs": [{"id": "ref-for-cross-origin-isolation-logical"}], "title": "2.1.1. Cross-origin-opener-policies"}, {"refs": [{"id": "ref-for-cross-origin-isolation-logical\u2460"}], "title": "2.1.1.1. Browsing context group switches due to cross-origin opener policy"}, {"refs": [{"id": "ref-for-cross-origin-isolation-logical\u2461"}], "title": "2.1.2. Document Isolation Policies"}], "external": true};
 window.dfnpanelData['5155c2d3'] = {"dfnID": "5155c2d3", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#non-secure-context", "dfnText": "non-secure context", "refSections": [{"refs": [{"id": "ref-for-non-secure-context"}], "title": "2.1.2.1. The headers"}], "external": true};
