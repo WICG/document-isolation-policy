@@ -42,7 +42,7 @@ This API only applies at document load time based on a header and cannot be used
 No difference with regular browsing mode. No data written to disk.
 
 ### Does this specification have both "Security Considerations" and "Privacy Considerations" sections?
-TODO
+Yes.
 
 ### Do features in your specification enable origins to downgrade default security protections?
 Document-Isolation-Policy enables cross-origin isolation, which allows access to potentially dangerous APIs like SharedArrayBuffers. This is mitigated by allowing the user agent to place the cross-origin isolated document in an appropriately isolated process.
