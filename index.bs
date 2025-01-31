@@ -4,8 +4,8 @@ Status: CG-DRAFT
 Group: WICG
 ED: https://github.com/WICG/document-isolation-policy
 Repository: https://github.com/WICG/document-isolation-policy
-Shortname: coop-restrict-properties
-Level: 1
+Shortname: document-isolation-policy
+Level: None
 Editor: Camille Lamy, Google, clamy@google.com
 Abstract:
   This proposal explores a new header, "Document-Isolation-Policy", that
@@ -61,40 +61,11 @@ WPT Display: inline
 </pre>
 
 <pre class="anchors">
-urlPrefix: https://tc39.es/ecma262/; spec: ECMAScript
-  text: SharedArrayBuffer; type: interface; url: sec-sharedarraybuffer-objects
-
-urlPrefix: https://infra.spec.whatwg.org/; spec: Infra 
-  text: append; type:dfn; url:set-append
-  text: contain an entry; type:dfn; url:map-exist
-  text: getting the value; type:dfn; url:map-get
-  text: list-is-empty; type:dfn; url:list-is-empty
-  text: list-remove; type:dfn; url:list-remove
-  text: list-size; type:dfn; url:list-size
-  text: map-empty; type:dfn; url:map-empty
-  text: map-exists; type:dfn; url:map-exists
-  text: map-size; type:dfn; url:map-size
-  text: map-value; type:dfn; url:map-size
-  text: remove entries; type:dfn; url:map-remove
-  text: set; type:dfn; url:ordered-set
-
 urlPrefix: https://html.spec.whatwg.org/C/; spec: html
   text: agent cluster key; type:dfn; url:agent-cluster-key
   text: browsing context; type:dfn; url:browsing-context
-  text: browsing-context-group; type:dfn; url:browsing-context-group
   text: browsing context group; type:dfn; url:browsing-context-group
-  text: browsing context group set; type:dfn; url:browsing-context-group-set
-  text: Browsing context group switches due to cross-origin opener policy; type:dfn; url:browsing-context-group-switches-due-to-cross-origin-opener-policy
-  text: COEP; type: dfn; url: coep
-  text: COOP; type: dfn; url: cross-origin-opener-policies
-  text: coop-enforcement-origin; type: dfn; url: coop-enforcement-origin
-  text: current context is navigation source; type: dfn; url: coop-enforcement-source
-  text: coop-same-origin; type: dfn; url: coop-same-origin
-  text: coop-same-origin-allow-popups; type: dfn; url: coop-same-origin-allow-popups
-  text: compatible with cross-origin isolation; type: dfn; url:compatible-with-cross-origin-isolation
-  text: concept-document-bc; type:dfn; url:concept-document-bc
-  text: concept-document-origin; type:dfn; url:concept-document-origin
-  text: concept-document-policy-container; type: dfn; url: concept-document-policy-container
+  text: policy container; type: dfn; url: policy-container
   text: concrete; type:dfn; url:cross-origin-isolation-concrete
   text: create a new browsing context and document; type:dfn; url:creating-a-new-browsing-context
   text: create and initialize a document object; type:dfn; url:initialise-the-document-object
@@ -102,80 +73,23 @@ urlPrefix: https://html.spec.whatwg.org/C/; spec: html
   text: creating a new top-level browsing context and document; type:dfn; url:creating-a-new-top-level-browsing-context
   text: create a new top-level browsing context and document; type:dfn; url:creating-a-new-top-level-browsing-context
   text: create a new top-level traversable; type:dfn; url:creating-a-new-top-level-traversable
-  text: Cross-Origin-Embedder-Policy; type: dfn; url: coep
   text: coep-unsafe-none; type: dfn; url: coep-unsafe-none
-  text: coep-credentialless; type: dfn; url: coep-credentialless
-  text: coep-require-corp; type: dfn; url: coep-require-corp
-  text: Cross-Origin-Opener-Policy; type: dfn; url: cross-origin-opener-policies
-  text: cross-origin opener policy; type: dfn; url: cross-origin-opener-policy
-  text: cross-origin-opener-policy-value; type: dfn; url: cross-origin-opener-policy-value
-  text: cross-origin opener policy enforcement result; type: dfn; url:coop-enforcement-result
-  text: crossOriginIsolated; type:dfn; url:concept-settings-object-cross-origin-isolated-capability
-  text: crossOriginGet; type:dfn; url:crossoriginget-(-o,-p,-receiver-)
-  text: crossOriginGetOwnPropertyHelper; type:dfn; url:crossorigingetownpropertyhelper-(-o,-p-)
-  text: crossOriginProperties; type:dfn; url:crossoriginproperties-(-o-)
-  text: crossOriginSet; type:dfn; url:crossoriginset-(-o,-p,-receiver-)
   text: cross-origin isolation mode; type:dfn; url: bcg-cross-origin-isolation
   text: embedder-policy-report-only-value; type: dfn; url: embedder-policy-report-only-value
   text: embedder-policy-value; type:dfn; url:embedder-policy-value
   text: embedder-policy-value-2; type:dfn; url:embedder-policy-value-2
   text: environment; type:dfn; url:environment
-  text: enforce a response's cross-origin opener policy; type:dfn; url:coop-enforce
-  text: Grouping of browsing contexts; type:dfn; url:grouping-of-browsing-contexts
-  text: Infrastructure for sequences of documents; type:dfn; url:infrastructure-for-sequences-of-documents
   text: Integration with the JavaScript agent cluster formalism; type:dfn; url:integration-with-the-javascript-agent-cluster-formalism
   text: is origin-keyed; type:dfn; url:is-origin-keyed
   text: loading web pages supporting concepts; type:dfn; url:loading-web-pages-supporting-concepts
   text: logical; type:dfn; url:cross-origin-isolation-logical
-  text: location-getownproperty; type:dfn; url:location-getownproperty
-  text: matching-coop; type:dfn; url:matching-coop
-  text: needs a browsing context group switch; type:dfn; url: coop-enforcement-bcg-switch
-  text: navigation params; type:dfn; url:navigation-params
-  text: navigation-params-hh; type:dfn; url:navigation-params-hh
-  text: navigation-params-origin; type:dfn; url:navigation-params-origin
-  text: coop-enforcement-bcg-switch; type:dfn; url:coop-enforcement-bcg-switch
-  text: policy container; type: dfn; url: policy-container
-  text: policy-container-embedder-policy; type: dfn; url: policy-container-embedder-policy
-  text: popup sandboxing flag set; type: dfn; url: popup-sandboxing-flag-set
-  text: queue a violation report for browsing context group switch when navigating to a COOP response; type:dfn; url:coop-violation-navigation-to
-  text: Queue a violation report for browsing context group switch when navigating away from a COOP response; type:dfn; url:coop-violation-navigation-from
-  text: obtaining a cross-origin embedder policy; type:dfn; url:obtain-an-embedder-policy
-  text: obtain a cross-origin opener policy; type:dfn; url:obtain-coop
   text: obtain a browsing context to use for a navigation response; type:dfn; url:obtain-browsing-context-navigation
-  text: obtain a similar-origin window agent; type:dfn; url:obtain-similar-origin-window-agent
   text: obtaining a similar-origin window agent; type:dfn; url:obtain-similar-origin-window-agent
   text: origin; type:dfn; url:concept-origin
-  text: report-only value; type:dfn; url:coop-struct-report-only-value
-  text: removing a top-level browsing context; type:dfn; url:bcg-remove
-  text: response; type:dfn; url:concept-response
-  text: same-origin-allow-popups; type:dfn; url:coop-same-origin-allow-popups
   text: same-origin-plus-coep; type:dfn; url:coop-same-origin-plus-coep
-  text: shared abstract operations; type:dfn; url:shared-abstract-operations
-  text: top-level browsing context; type:dfn; url:top-level-browsing-context
-  text: same origin; type:dfn; url:same-origin
-  text: unsafe-none; type:dfn; url:coop-unsafe-none
-  text: virtual browsing context group id; type:dfn; url:virtual-browsing-context-group-id
-  text: WindowProxy; type:dfn; url:the-window-proxy-exotic-object
-  text: windowproxy-get; type:dfn; url:windowproxy-get
-  text: windowproxy-getownproperty; type:dfn; url:windowproxy-getownproperty
-  text: windowproxy-set; type:dfn; url:windowproxy-set
-  text: windows; type:dfn; url:windows
-  text: window open steps; type:dfn; url:window-open-steps
-  text: would need a browsing context group switch due to report-only; type:dfn; url:coop-enforcement-bcg-switch-report-only
-  <!--text: A; type:dfn; url:A-->
-  <!--text: A; type:dfn; url:A-->
-
-urlPrefix: https://webidl.spec.whatwg.org/#LegacyUnenumerableNamedProperties
-  text: DOMException; type:dfn; url:dfn-DOMException
-  text: LegacyUnenumerableNamedProperties; type:dfn; url:LegacyUnenumerableNamedProperties
-  text: SecurityError; type:dfn; url:securityerror
-
-urlPrefix: https://tc39.es/ecma262/#sec-execution-contexts
-  text: javascript execution context; type:dfn; url:sec-execution-contexts
 
 urlPrefix: https://httpwg.org/specs/rfc8941.html; spec: Structured-Fields
   text: structured headers; type:dfn; url:specify
-  text: token; type:dfn; url:token
 
 urlPrefix: https://fetch.spec.whatwg.org/; spec: Fetch
   text: cross-origin-resource-policy; type:dfn; url:http-cross-origin-resource-policy
@@ -235,12 +149,11 @@ Recommended readings {#recommended-readings}
 --------------------
 - The [[explainer]] for Document-Isolation-Policy.
 - The [[Spectre]] vulnerability.
-- The [=Cross-Origin-Opener-Policy=] ([=COOP=]) section of the HTML spec.
-- The [=Cross-Origin-Embedder-Policy=] ([=COEP=]) section of the HTML spec.
-- How and why [=Cross-Origin-Opener-Policy=] ([=COOP=]) and
-  [=Cross-Origin-Embedder-Policy=] ([=COEP=]) are granting the
-  [crossOriginIsolated](concept-settings-object-cross-origin-isolated-capability)
-  capability. See [[WhyCoopCoep]].
+- The [:Cross-Origin-Opener-Policy:] (COOP) section of the HTML spec.
+- The [:Cross-Origin-Embedder-Policy:] (COEP) section of the HTML spec.
+- How and why [:Cross-Origin-Opener-Policy:] (COOP) and
+  [:Cross-Origin-Embedder-Policy:] (COEP) are granting the
+  [=environment settings object/cross-origin isolated capability=]. See [[WhyCoopCoep]].
 
 # Integration with HMTL # {#dip-html}
 
@@ -256,7 +169,7 @@ Modify the definition of "[=same-origin-plus-coep=]":
 
 This behaves the same as "same-origin", with the addition that it sets the
 (new) [=top-level browsing context=]'s [=browsing context group|group=]'s
-[=bcg-coi-key|agent cluster cross-origin isolation key=]'s [=cross-origin
+[=browsing context group/agent cluster cross-origin isolation key=]'s [=cross-origin
 isolation mode=] to one of "[=logical=]" or "[=concrete=]".
 
 </div>
@@ -271,7 +184,7 @@ Modify step 4 of the [=obtain a browsing context to use for a navigation respons
   1. Let *crossOriginIsolationMode* be either "[=logical=]" or "[=concrete=]".
      The choice of which is implementation-defined.
   2. Set *newBrowsingContext*'s [=browsing context group|group=]'s
-     [=bcg-coi-key|agent cluster cross-origin isolation key=] to
+     [=browsing context group/agent cluster cross-origin isolation key=] to
      {*coopEnforcementResult*'s [=origin=], *crossOriginIsolationMode*}. 
 
 </div>
@@ -283,93 +196,93 @@ of the HTML spec.
 
 <div class="monkey-patch">
 
-A <dfn lt="dip-value">document isolation policy value</dfn> is one of three
+A <dfn id="dip-value">document isolation policy value</dfn> is one of three
 strings that controls [=agent cluster=] allocation and the fetching of
 cross-origin resources without explicit permission from resource owners.
 
-* "<dfn lt="dip-none">none</dfn>":
+* "<dfn for="document isolation policy value" id="dip-none">none</dfn>":
   This is the default value. When this value is used, cross-origin resources
   can be fetched without giving explicit permission through the [=CORS
-  protocol=] or the '[=Cross-Origin-Resource-Policy=]' header. The document is
+  protocol=] or the [:Cross-Origin-Resource-Policy:] header. The document is
   assigned to a non cross-origin isolated [=agent cluster=].
 
-* "<dfn lt="dip-isolate-and-require-corp">isolate-and-require-corp</dfn>":
+* "<dfn for="document isolation policy value" id="dip-isolate-and-require-corp">isolate-and-require-corp</dfn>":
   When this value is used, fetching cross-origin resources requires the
   server's explicit permission through the [=CORS protocol=] or the
-  '[=Cross-Origin-Resource-Policy=]' header. The document is also assigned to a
+  [:Cross-Origin-Resource-Policy:] header. The document is also assigned to a
   cross-origin isolated [=agent cluster=].
 
-* "<dfn lt="dip-isolate-and-credentialless">isolate-and-credentialless</dfn>":
+* "<dfn for="document isolation policy value" id="dip-isolate-and-credentialless">isolate-and-credentialless</dfn>":
   When this value is used, fetching cross-origin no-CORS resources omits
-  credentials. In exchange, an explicit '[=Cross-Origin-Resource-Policy=]'
+  credentials. In exchange, an explicit [:Cross-Origin-Resource-Policy:]
   header is not required. Other requests sent with credentials require the
   server's explicit permission through the [=CORS protocol=] or the
-  '[=Cross-Origin-Resource-Policy=]' header. The document is also assigned to a
+  [:Cross-Origin-Resource-Policy:] header. The document is also assigned to a
   cross-origin isolated [=agent cluster=].
 
-A <dfn lt="dip-struct">document isolation policy</dfn> consists of:
-* A <dfn lt="dip-struct-value">value</dfn>, which is a [=dip-value|document
-  isolation policy value=], initially "[=dip-none|none=].
-* A <dfn lt="dip-reporting-endpoint">reporting endpoint</dfn>, initially the
+A <dfn id="dip-struct">document isolation policy</dfn> consists of:
+* A <dfn for="document isolation policy" id="dip-struct-value">value</dfn>, which is a [=document
+  isolation policy value=], initially "[=none=].
+* A <dfn for="document isolation policy" id="dip-reporting-endpoint">reporting endpoint</dfn>, initially the
   empty string.
-* A <dfn lt="dip-report-only-value">report-only value</dfn>, which is a
-  [=dip-value|document
-  isolation policy value=], initially "[=dip-none|none=].
-* A <dfn lt="dip-report-only-endpoint">report-only reporting endpoint</dfn>,
+* A <dfn for="document isolation policy" id="dip-report-only-value">report-only value</dfn>, which is a
+  [=document
+  isolation policy value=], initially "[=none=].
+* A <dfn for="document isolation policy" id="dip-report-only-endpoint">report-only reporting endpoint</dfn>,
   initially the empty string.
 
-To <dfn lt="obtain-coi-key">obtain a cross-origin agent cluster isolation
-key</dfn> given null or a [=dip-struct|document isolation policy=]
+To <dfn abstract-op id="obtain-coi-key">obtain a cross-origin agent cluster isolation
+key</dfn> given null or a [=/document isolation policy=]
 *documentIsolationPolicy* and an [=origin=] *origin*:
 1. If *documentIsolationPolicy* is null, return null.
-2. If *documentIsolationPolicy*'s [=dip-struct-value|value=] is
-   "[=dip-none|none=]", then return null.
+2. If *documentIsolationPolicy*'s [=document isolation policy/value=] is
+   "[=none=]", then return null.
 3. Let *crossOriginIsolationMode* be either "[=logical=]" or "[=concrete=]".
    The choice of which is implementation-defined.
-4. Let *crossOriginIsolationKey* be a new [=coi-agent-cluster-key|agent cluster
+4. Let *crossOriginIsolationKey* be a new [=/agent cluster
    cross-origin isolation key=].
 5. Set *crossOriginIsolationKey* to {*origin*, *crossOriginIsolationMode*}. 
 6. Return *crossOriginIsolationKey*.
 
 #### The headers #### {#dip-headers}
 
-The '<dfn lt="dip-header">Document-Isolation-Policy</dfn>' and
-'<dfn lt="dip-report-only-header">Document-Isolation-Policy-Report-Only</dfn>'
-HTTP response headers allow a server to declare a [=dip-struct|document isolation
-policy=] for a [=document=]. These headers are [=structured headers=] whose values
+The '<dfn http-header id="dip-header">Document-Isolation-Policy</dfn>' and
+'<dfn http-header id="dip-report-only-header">Document-Isolation-Policy-Report-Only</dfn>'
+HTTP response headers allow a server to declare a [=/document isolation
+policy=] for a [=/document=]. These headers are [=structured headers=] whose values
 must be [=token=].
 
-The valid [=token=] values are the [=dip-value|document isolation policy
+The valid [=token=] values are the [=document isolation policy
 values=]. The token may also have attached [=parameters=]; of these, the
 "report-to" parameter can have a [=valid URL string=] identifying an
 appropriate reporting endpoint.
 
-To <dfn lt="obtain-dip">obtain a document isolation policy</dfn> given a
+To <dfn abstract-op id="obtain-dip">obtain a document isolation policy</dfn> given a
 [=response=] *response* and an [=environment=] *environment*:
 
-1. Let *policy* be a new [=dip-struct|document isolation policy=].
+1. Let *policy* be a new [=/document isolation policy=].
 2. If *environment* is a [=non-secure context=], then return *policy*.
 3. Let *parsedItem* be the result of [=getting a structured field value=] with
    `Document-Isolation-Policy` and "item" from *response*'s [=header list=].
 4. If *parsedItem* is non-null:
    1. If *parsedItem*[0] is
-      "[=dip-isolate-and-require-corp|isolate-and-require-corp=]" or
-      "[=dip-isolate-and-credentialless|isolate-and-credentialless=]", set
-      *policy*'s [=dip-struct-value|value=] to *parsedItem*[0].
-   2. If *parsedItem*[1]["report-to"] [=map-exists|exists=], then set *policy*'s
-      [=dip-reporting-endpoint|reporting endpoint=] to
+      "[=isolate-and-require-corp=]" or
+      "[=isolate-and-credentialless=]", set
+      *policy*'s [=document isolation policy/value=] to *parsedItem*[0].
+   2. If *parsedItem*[1]["report-to"] [=map/exists=], then set *policy*'s
+      [=reporting endpoint=] to
       *parsedItem*[1]["report-to"].
 5. Set *parsedItem* be the result of [=getting a structured field value=] with
-   `Document-Isolation-Policyi-Report-Only` and "item" from *response*'s
+   `Document-Isolation-Policy-Report-Only` and "item" from *response*'s
    [=header list=].
 6. If *parsedItem* is non-null:
    1. If *parsedItem*[0] is
-      "[=dip-isolate-and-require-corp|isolate-and-require-corp=]" or
-      "[=dip-isolate-and-credentialless|isolate-and-credentialless=]", set
-      *policy*'s [=dip-report-only-value|report-only value=] to
+      "[=isolate-and-require-corp=]" or
+      "[=isolate-and-credentialless=]", set
+      *policy*'s [=document isolation policy/report-only value=] to
       *parsedItem*[0].
-   2. If *parsedItem*[1]["report-to"] [=map-exists|exists=], then set
-      *policy*'s [=dip-report-only-endpoint|report-only reporting endpoint=] to
+   2. If *parsedItem*[1]["report-to"] [=map/exists=], then set
+      *policy*'s [=report-only reporting endpoint=] to
       *parsedItem*[1]["report-to"].
 7. Return policy.
 
@@ -381,16 +294,16 @@ Add the following members to the [=policy container=] struct:
 
 <div class="monkey-patch">
 
-* A <dfn lt="policy-container-dip">document isolation policy</dfn>, which is a
-  [=dip-struct|document isolation policy=]. It is initially a new
-  [=dip-struct|document isolation policy=].
+* A <dfn for="policy container" id="policy-container-dip">document isolation policy</dfn>, which is a
+  [=/document isolation policy=]. It is initially a new
+  [=/document isolation policy=].
 
-* An <dfn lt="policy-container-coi-key">agent cluster cross-origin isolation
-  key</dfn>, which is null or an [=coi-agent-cluster-key|agent cluster
+* An <dfn for="policy container" id="policy-container-coi-key">agent cluster cross-origin isolation
+  key</dfn>, which is null or an [=/agent cluster
   cross-origin isolation key=]. It is initially null. This
-  [=coi-agent-cluster-key|agent cluster cross-origin isolation key=] is based
-  on the [=dip-struct|document isolation policy=] of the document. It overrides the 
-  [=bcg-coi-key|agent cluster cross-origin isolation key=] stored in the
+  [=/agent cluster cross-origin isolation key=] is based
+  on the [=/document isolation policy=] of the document. It overrides the 
+  [=browsing context group/agent cluster cross-origin isolation key=] stored in the
   [=browsing context group=].
 
 </div>
@@ -399,12 +312,12 @@ Add step 5 and 6 to the [=clone a policy container=] algorithm:
 
 <div class="monkey-patch">
 
-5. Set *clone*'s [=policy-container-dip|document isolation policy=] to a copy
-   of *policyContainer*'s [=policy-container-dip|document isolation policy=].
+5. Set *clone*'s [=policy container/document isolation policy=] to a copy
+   of *policyContainer*'s [=policy container/document isolation policy=].
 
-6. Set *clone*'s [=policy-container-coi-key|agent cluster cross-origin
+6. Set *clone*'s [=policy container/agent cluster cross-origin
    isolation key=] to a copy of *policyContainer*'s
-   [=policy-container-coi-key|agent cluster cross-origin isolation key=].
+   [=policy container/agent cluster cross-origin isolation key=].
 
 </div>
 
@@ -413,13 +326,14 @@ Add step 6 and 7 to the [=create a policy container from a fetch response =]:
 <div class="monkey-patch">
 
 6. If *environment* is non-null, then set *result*'s
-   [=policy-container-dip|document isolation policy=] to the result of
-   [=obtain-dip|obatining a document isolation policy=] given *response* and
+   [=policy container/document isolation policy=] to the result of
+   [$obtain a document isolation policy|obtaining a document isolation policy$] given *response* and
    *environment*.
 
-7. Set *result*'s [=policy-container-coi-key|agent cluster cross-origin
-   isolation key=] to the result of [=obtain-coi-key|obtaining a cross-origin
-   isolation key=] given *result*'s [=policy-container-dip|document isolation
+7. Set *result*'s [=policy container/agent cluster cross-origin
+   isolation key=] to the result of [$obtain a cross-origin
+   agent cluster isolation key|obtaining a cross-origin
+   agent cluster isolation key$] given *result*'s [=policy container/document isolation
    policy=] and *response*'s [=URL=]'s [=origin=].
 
 </div>
@@ -442,7 +356,7 @@ Add a step 5.4 to the [=create a new browsing context and document=] algorithm:
 <div class="monkey-patch">
 
 5.4 Set *creatorAgentClusterCOIKey* to *creator*'s [=policy container=]'s
-[=policy-container-coi-key|agent cluster cross-origin isolation key=].
+[=policy container/agent cluster cross-origin isolation key=].
 
 </div>
 
@@ -470,14 +384,14 @@ Add the following line:
 
 <div class="monkey-patch">
 
-A [=browsing context group=] has an <dfn lt="bcg-coi-key">agent cluster
+A [=browsing context group=] has an <dfn for="browsing context group" id="bcg-coi-key">agent cluster
 cross-origin isolation key</dfn>, which is null or an
-[=coi-agent-cluster-key|agent cluster cross-origin isolation key=] . It is
-initially null. It is set by [=Cross-Origin-Opener-Policy=], and is the default
-[=coi-agent-cluster-key|agent cluster cross-origin isolation key=] for
-documents inside the [=browsing context group=]. However, it can be overriden by the 
-[=policy-container-coi-key|policy container's agent cluster cross-origin
-isolation key=] when a document has a [=dip-struct|document isolation policy=].
+[=/agent cluster cross-origin isolation key=] . It is
+initially null. It is set by [:Cross-Origin-Opener-Policy:], and is the default
+[=/agent cluster cross-origin isolation key=] for
+documents inside the [=browsing context group=]. However, it can be overriden by the policy container's
+[=policy container/agent cluster cross-origin
+isolation key=] when a document has a [=/document isolation policy=].
 
 </div>
 
@@ -492,7 +406,7 @@ Modify step 8.4 of the [=create and initialize a Document object=] algorithm:
 Let *agent* be the result of [=obtaining a similar-origin window agent=] given
 *navigationParams*'s [=origin=], *browsingContext*'s [=browsing context
 group|group=], *requestsOAC*, and *navigationParams*'s [=policy container=]'s
-[=policy-container-coi-key|agent cluster cross-origin isolation key=].
+[=policy container/agent cluster cross-origin isolation key=].
 
 </div>
 
@@ -503,7 +417,7 @@ formalism=]:
 
 <div class="monkey-patch">
 
-An <dfn lt="coi-agent-cluster-key">agent cluster cross-origin isolation
+An <dfn id="coi-agent-cluster-key">agent cluster cross-origin isolation
 key</dfn> is a [=tuple=] of an [=origin=] and a [=cross-origin isolation
 mode=].
 
@@ -514,7 +428,7 @@ Change the definition of the [=agent cluster key=]:
 <div class="monkey-patch">
 
 An [=agent cluster key=] is either a [=site=], or a [=tuple origin=], or a
-[=tuple=] of a [=tuple origin=] and an [=coi-agent-cluster-key|agent cluster
+[=tuple=] of a [=tuple origin=] and an [=/agent cluster
 cross-origin isolation key=].
 
 </div>
@@ -525,7 +439,7 @@ Modify the [=obtain a similar-origin window agent=] algorithm definition:
 
 To [=obtain a similar-origin window agent=], given an [=origin=] *origin*, a
 [=browsing context group=] *group*, a boolean *requestsOAC*, and null or an
-[=coi-agent-cluster-key|agent cluster cross-origin isolation key=]
+[=/agent cluster cross-origin isolation key=]
 *agentClusterCOIKey*, run these steps:
 
 </div>
@@ -535,8 +449,8 @@ Modify step 3 of the [=obtain a similar-origin window agent=] algorithm:
 
 3. If *agentClusterCOIKey* is not *null*, then set *key* to {*origin*,
    *agentClusterCOIKey*}.
-4. Otherwise, if *group's* [=bcg-coi-key|agent cluster cross-origin isolation
-   key=] is not *null*, then set *key* to {*origin*, *group's* [=bcg-coi=key|agent
+4. Otherwise, if *group's* [=browsing context group/agent cluster cross-origin isolation
+   key=] is not *null*, then set *key* to {*origin*, *group's* [=browsing context group/agent
    cluster cross-origin isolation key=]}.
 
 </div>
@@ -545,9 +459,9 @@ Modify steps 6.2 and 6.3 of the [=obtain a similar-origin window agent=] algorit
 
 <div class="monkey-patch">
 
-6.2 If *key* has an [=coi-agent-cluster-key|agent cluster cross-origin
+6.2 If *key* has an [=/agent cluster cross-origin
 isolation key=], set *agentCluster*'s [=cross-origin isolation mode=] to
-*key*'s [=coi-agent-cluster-key|agent cluster cross-origin isolation key=]'s
+*key*'s [=/agent cluster cross-origin isolation key=]'s
 [=cross-origin isolation mode=].
 
 6.3 Set *agentCluster*'s [=is origin-keyed=] to false if *key* equals *site*; otherwise true.
@@ -569,8 +483,8 @@ To check if <dfn>Document-Isolation-Policy allows credentials</dfn>, given a
 1. If *request*’s [=mode=] is not "no-cors", then return true.
 2. If *request*’s [=client=] is null, then return true.
 3. If *request*’s [=client=]’s [=policy container=]’s
-   [=policy-container-dip|document-isolation-policy=]’s [=dip-value|value=] is not
-   "[=dip-isolate-and-credentialless|isolate-and-credentialless=]", then return true.
+   [=policy container/document isolation policy=]’s [=document isolation policy value|value=] is not
+   "[=isolate-and-credentialless=]", then return true.
 4. If *request*’s [=origin=] is [=same origin=] with *request*’s [=current
    URL=]’s [=origin=] and *request* does not have a [=redirect-tainted origin=],
    then return true.
@@ -580,17 +494,17 @@ To check if <dfn>Document-Isolation-Policy allows credentials</dfn>, given a
 
 ## 'Cross-Origin-Resource-Policy' header ## {#dip-corp}
 
-Add a new enum definition to the [=Cross-Origin-Resource-Policy=] section of Fetch:
+Add a new enum definition to the [:Cross-Origin-Resource-Policy:] section of Fetch:
 
 <div class="monkey-patch">
 
-A <dfn lt="corp-check-result">cross-origin resource policy internal check result</dfn>
+A <dfn id="corp-check-result">cross-origin resource policy internal check result</dfn>
 is one of five values:
-* "<dfn lt="corp-check-allowed">allowed</dfn>"
-* "<dfn lt="corp-check-blocked">blocked</dfn>"
-* "<dfn lt="corp-check-blocked-coep">blocked-by-coep</dfn>"
-* "<dfn lt="corp-check-blocked-dip">blocked-by-dip</dfn>"
-* "<dfn lt="corp-check-blocked-coep-dip">blocked-by-coep-and-dip</dfn>"
+* "<dfn for="cross-origin resource policy internal check result" id="corp-check-allowed">allowed</dfn>"
+* "<dfn for="cross-origin resource policy internal check result" id="corp-check-blocked">blocked</dfn>"
+* "<dfn for="cross-origin resource policy internal check result" id="corp-check-blocked-coep">blocked-by-coep</dfn>"
+* "<dfn for="cross-origin resource policy internal check result" id="corp-check-blocked-dip">blocked-by-dip</dfn>"
+* "<dfn for="cross-origin resource policy internal check result" id="corp-check-blocked-coep-dip">blocked-by-coep-and-dip</dfn>"
 
 </div>
 
@@ -599,31 +513,31 @@ Modify the [=cross-origin resource policy check=] algorithm:
 <div class="monkey-patch">
 
 4. Let *documentIsolationPolicy* be *settingsObject*’s [=policy container=]’s
-   [=policy-container-dip|document-isolation-policy=].
+   [=policy container/document isolation policy=].
 5. Let *reportOnlyCheck* be the the result of the [=cross-origin resource
    policy internal check=] with *origin*,  *embedderPolicy*’s
    [=embedder-policy-report-only-value|report only value=],
-   *documentIsolationPolicy*’s [=dip-report-only-value|report only value=],
+   *documentIsolationPolicy*’s [=document isolation policy/report-only value=],
    *response*, and *forNavigation*. 
-6. If *reportOnlyCheck* is "[=corp-check-blocked-coep|blocked-by-coep=]" or
-   "[=corp-check-blocked-coep-dip|blocked-by-coep-and-dip=]", then [=queue a
+6. If *reportOnlyCheck* is "[=blocked-by-coep=]" or
+   "[=blocked-by-coep-and-dip=]", then [=queue a
    cross-origin embedder policy CORP violation report=] with *response*,
    *settingsObject*, *destination*, and true.
-7. If *reportOnlyCheck* is "[=corp-check-blocked-dip|blocked-by-dip=]" or
-   "[=corp-check-blocked-coep-dip|blocked-by-coep-and-dip=]", then [=queue a
+7. If *reportOnlyCheck* is "[=blocked-by-dip=]" or
+   "[=blocked-by-coep-and-dip=]", then [=queue a
    document isolation policy CORP violation report=] with *response*,
    *settingsObject*, *destination*, and true.
 8. Let *check* be the the result of the [=cross-origin resource
    policy internal check=] with *origin*,  *embedderPolicy*’s
    [=embedder-policy-value-2|value=], *documentIsolationPolicy*’s
-   [=dip-struct-value|report value=], *response*, and *forNavigation*. 
-9. If *check* is "[=corp-check-allowed|allowed=]", then return **allowed**.
-10. If *check* is "[=corp-check-blocked-coep|blocked-by-coep=]" or
-    "[=corp-check-blocked-coep-dip|blocked-by-coep-and-dip=]", then [=queue a
+   [=document isolation policy/value|report value=], *response*, and *forNavigation*. 
+9. If *check* is "[=allowed=]", then return **allowed**.
+10. If *check* is "[=blocked-by-coep=]" or
+    "[=blocked-by-coep-and-dip=]", then [=queue a
     cross-origin embedder policy CORP violation report=] with *response*,
     *settingsObject*, *destination*, and false.
-11. If *reportOnlyCheck* is "[=corp-check-blocked-dip|blocked-by-dip=]" or
-    "[=corp-check-blocked-coep-dip|blocked-by-coep-and-dip=]", then [=queue a
+11. If *reportOnlyCheck* is "[=blocked-by-dip=]" or
+    "[=blocked-by-coep-and-dip=]", then [=queue a
     document isolation policy CORP violation report=] with *response*,
     *settingsObject*, *destination*, and false.
 12. Return **blocked**.
@@ -636,7 +550,7 @@ Modify the [=cross-origin resource policy internal check=] algorithm definition:
 
 To perform a [=cross-origin resource policy internal check=], given an [=origin=]
 *origin*, an [=embedder policy value=] *embedderPolicyValue*, a
-[=dip-value|document isolation policy value=] *documentIsolationPolicyValue*, a
+[=/document isolation policy value=] *documentIsolationPolicyValue*, a
 [=response=] *response*, and a boolean *forNavigation*, run these steps:
 
 </div>
@@ -645,56 +559,56 @@ Modify the [=cross-origin resource policy internal check=] algorithm:
 
 <div class="monkey-patch">
 
-4. Let *checkResult* be a [=corp-check-result|cross-origin resource policy
-   internal check result=] with value "[=corp-check-blocked|blocked=]".
+4. Let *checkResult* be a [=cross-origin resource policy
+   internal check result=] with value "[=cross-origin resource policy internal check result/blocked=]".
 6. If *policy* is null, then:
    1. Let *upgradeDueToCOEP* be false.
    2. Let *upgradeDueToDIP* be false.
    3. Switch on *embedderPolicyValue*:
       * "[=coep-unsafe-none|unsafe-none=]"
         1. Do nothing.
-      * "[=coep-credentialless|credentialless=]"
+      * "[=credentialless=]"
         1. Set *upgradeDueToCOEP* to true if:
            * *response*’s [=request-includes-credentials=] is true, or
            * *forNavigation* is true.
-      * "[=coep-require-corp|require-corp=]"
+      * "[=require-corp=]"
         1. Set *upgradeDueToCOEP* to true.
    4. Switch on *documentIsolationPolicyValue*:
-      * "[=dip-none|dip-none=]"
+      * "[=none=]"
         1. Do nothing.
-      * "[=dip-isolate-and-credentialless|isolate-and-credentialless=]"
+      * "[=isolate-and-credentialless=]"
         1. Set *upgradeDueToDIP* to true if *response*’s
            [=request-includes-credentials=] is true.
-      * "[=dip-isolate-and-require-corp|isolate-and-require-corp=]"
+      * "[=isolate-and-require-corp=]"
         1. Set *upgradeDueToDIP* to true.
    5. If *upgradeDueToCOEP* or *upgradeDueToDIP* is true, set *policy* to
       'same-origin'.
    6. If *upgradeDueToCOEP* is true, then:
       1. If *upgradeDueToDIP* is true, then set *checkResult* to
-         "[=corp-check-blocked-coep-dip|blocked-by-coep-and-dip=]".
+         "[=blocked-by-coep-and-dip=]".
       2. Otherwise, set *checkResult* to
-         "[=corp-check-blocked|blocked-by-coep=]". 
+         "[=blocked-by-coep=]". 
    7. Otherwise, if *upgradeDueToDIP* is true, then set *checkResult* to
-         "[=corp-check-blocked-dip|blocked-by-dip=]".
+         "[=blocked-by-dip=]".
 7. Switch on *policy*:
    * null
    * `cross-origin`
-     1. Set *checkResult* to "[=corp-check-allowed|allowed=]".
+     1. Set *checkResult* to "[=allowed=]".
    * `same-origin`
      1. If *origin* is [=same origin=] with *response*’s [=URL=]’s [=origin=],
-        then set *checkResult* to "[=corp-check-allowed|allowed=]".
+        then set *checkResult* to "[=allowed=]".
    * `same-site`
      1. If all of the following are true
         * *origin* is [=schemelessly same site=] with *response*’s [=URL=]’s
           *origin*
         * *origin*’s [=scheme=] is "https" or *response*’s [=URL=]’s [=scheme=]
           is not "https"
-     2. then set *checkResult* to "[=corp-check-allowed|allowed=]".
+     2. then set *checkResult* to "[=allowed=]".
 8. Return *checkResult*.
 
 </div>
 
-Add a new algorithm to the [=Cross-Origin-Resource-Policy=] section of Fetch:
+Add a new algorithm to the [:Cross-Origin-Resource-Policy:] section of Fetch:
 
 <div class="monkey-patch">
 
@@ -702,11 +616,11 @@ To <dfn>queue a document isolation policy CORP violation report</dfn>, given a
 [=response=] *response*, an [=environment settings object=] *settingsObject*, a
 string *destination*, and a boolean *reportOnly*, run these steps:
 1. Let *endpoint* be *settingsObject*’s [=policy container=]’s
-   [=policy-container-dip|document-isolation-policy=]’s
-   [=dip-report-only-endpoint|report only reporting endpoint=] if *reportOnly*
+   [=policy container/document isolation policy=]’s
+   [=report-only reporting endpoint=] if *reportOnly*
    is true and *settingsObject*’s [=policy container=]’s
-   [=policy-container-dip|document-isolation-policy=]’s
-   [=dip-reporting-endpoint|reporting endpoint=] otherwise.
+   [=policy container/document isolation policy=]’s
+   [=reporting endpoint=] otherwise.
 2. Let *serializedURL* be the result of [=serializing a response URL for
    reporting=] with *response*.
 3. Let *disposition* be "reporting" if reportOnly is true; otherwise "enforce".
