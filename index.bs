@@ -283,7 +283,7 @@ of the HTML spec.
 
 <div class="monkey-patch">
 
-A <dfn lt="dip-value">document isolation policy value</dfn> is one of three
+A <dfn lt="dip-value">document isolation policy value</dfn> is one of four
 strings that controls [=agent cluster=] allocation and the fetching of
 cross-origin resources without explicit permission from resource owners.
 
@@ -306,6 +306,13 @@ cross-origin resources without explicit permission from resource owners.
   server's explicit permission through the [=CORS protocol=] or the
   '[=Cross-Origin-Resource-Policy=]' header. The document is also assigned to a
   cross-origin isolated [=agent cluster=].
+
+* "<dfn lt="dip-isolate-me">isolate-me</dfn>":
+  When this value is used, the document is assigned to a unique agent cluster
+  identified by a nonce, making it the only document in that cluster. This ensures
+  that no other document can synchronously access (script) this document, even if
+  they share the same origin. This provides the strongest isolation guarantee by
+  ensuring complete isolation from all other documents.
 
 A <dfn lt="dip-struct">document isolation policy</dfn> consists of:
 * A <dfn lt="dip-struct-value">value</dfn>, which is a [=dip-value|document

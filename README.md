@@ -194,12 +194,13 @@ Overall, we believe the time is right to develop a process-isolation based solut
 We propose introducing a new security policy, Document-Isolation-Policy which will enable crossOriginIsolation for the document. The safety of the model will be backed by isolating the document when the browser is able to do so. When the browser cannot provide the necessary process isolation, COI-gated APIs will not be available.
 
 ### Document-Isolation-Policy header
-We introduce a new policy Document-Isolation-Policy, backed by an HTTP header. The policy can have three values:
+We introduce a new policy Document-Isolation-Policy, backed by an HTTP header. The policy can have four values:
 
 ```
 Document-Isolation-Policy: none
 Document-Isolation-Policy: isolate-and-credentialless
 Document-Isolation-Policy: isolate-and-require-corp
+Document-Isolation-Policy: isolate-me
 ```
 
 `none` is the default value. It does not do anything.
@@ -207,6 +208,8 @@ Document-Isolation-Policy: isolate-and-require-corp
 `isolate-and-credentialless` impacts agent cluster allocation for the document. It also forces no-cors cross-origin requests to be sent without credentials for subresources embedded by the document (like [COEP credentialless](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy#credentialless)).
 
 `isolate-and-require-corp` impacts agent cluster allocation for the document. Additionally, the document can only load subresources from the same origin, or subresources explicitly marked as loadable from another origin. For non-cors requests, the response should have an appropriate Cross-Origin-Resource-Policy header (like [COEP require-corp](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy#credentialless)).
+
+`isolate-me` assigns the document's agent cluster a unique identifier (a nonce), effectively making the document the only child of that cluster. By being the only child of a cluster, that document exists knowing no other document can access it synchronously (aka "script it"), even if that other document shares its origin. This provides the strongest isolation guarantee by ensuring the document cannot be accessed by any other document, regardless of origin.
 
 ### Interaction with COEP
 The policy exists side-by-side with [COEP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy) and does not influence it. In particular, an iframe with Document-Isolation-Policy but not COEP may not be embedded in a COEP document.
@@ -412,7 +415,7 @@ The case for cross-origin popups is much simpler with Document-Isolation-Policy 
 
 ![COOP rp and cross-origin popups](/images/coop-rp-popup.png)
 
-The initial empty document opened by a cross-origin iframe needs to be in its process, unless opened with rel no-opener Because the current model does not force process isolation, the cross-origin iframe can be in the same process as the top-level frame. Which means that a popup it opens will be in the process of the top-level frame as well. COOP same-origin avoids this issue by forcing popups opened from cross-origin frames to have rel no-opener. But that’s not practical for COOP restrict-properties which aims to preserve opener relationships. Instead, COOP restrict-properties add an origin to COOP to track which origin sent the COOP header in the first place. This origin is used to match COOP, and to restrict access to COI gated APIs when the COOP origin doesn’t match the top-level origin.
+The initial empty document opened by a cross-origin iframe needs to be in its process, unless opened with rel no-opener Because the current model does not force process isolation, the cross-origin iframe can be in the same process as the top-level frame. Which means that a popup it opens will be in the process of the top-level frame as well. COOP same-origin avoids this issue by forcing popups opened from cross-origin frames to have rel no-opener. But that's not practical for COOP restrict-properties which aims to preserve opener relationships. Instead, COOP restrict-properties add an origin to COOP to track which origin sent the COOP header in the first place. This origin is used to match COOP, and to restrict access to COI gated APIs when the COOP origin doesn't match the top-level origin.
 
 This problem simply does not exist with Document-Isolation-Policy since we’re guaranteeing that the only documents in the process of the Document-Isolation-Policy + COEP are same-origin and also have Document-Isolation-Policy + COEP. So when any of those opens an about:blank popup, it is placed in the same process and it naturally inherits origin, Document-Isolation-Policy and COEP from the PolicyContainer, which is what we want.
 
