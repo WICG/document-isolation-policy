@@ -209,7 +209,7 @@ Document-Isolation-Policy: isolate-me
 
 `isolate-and-require-corp` impacts agent cluster allocation for the document. Additionally, the document can only load subresources from the same origin, or subresources explicitly marked as loadable from another origin. For non-cors requests, the response should have an appropriate Cross-Origin-Resource-Policy header (like [COEP require-corp](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy#credentialless)).
 
-`isolate-me` assigns the document's agent cluster a unique identifier (a nonce), effectively making the document the only child of that cluster. By being the only child of a cluster, that document exists knowing no other document can access it synchronously (aka "script it"), even if that other document shares its origin. This provides the strongest isolation guarantee by ensuring the document cannot be accessed by any other document, regardless of origin.
+`isolate-me` assigns the document's agent cluster a unique identifier (a nonce), effectively making the document the only child of that cluster. By being the only child of a cluster, that document exists knowing no other document can access it synchronously (aka "script it"), even if that other document shares its origin (whether it is a top level document or an embedded one). This provides the strongest isolation guarantee by ensuring the document cannot be accessed by any other document, regardless of origin.
 
 ### Interaction with COEP
 The policy exists side-by-side with [COEP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy) and does not influence it. In particular, an iframe with Document-Isolation-Policy but not COEP may not be embedded in a COEP document.
