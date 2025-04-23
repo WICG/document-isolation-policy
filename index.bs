@@ -123,6 +123,7 @@ urlPrefix: https://html.spec.whatwg.org/C/; spec: html
   text: enforce a response's cross-origin opener policy; type:dfn; url:coop-enforce
   text: Grouping of browsing contexts; type:dfn; url:grouping-of-browsing-contexts
   text: Infrastructure for sequences of documents; type:dfn; url:infrastructure-for-sequences-of-documents
+  text: initialize a worker global scope's policy container; type:dfn; url:initialize-worker-policy-container
   text: Integration with the JavaScript agent cluster formalism; type:dfn; url:integration-with-the-javascript-agent-cluster-formalism
   text: is origin-keyed; type:dfn; url:is-origin-keyed
   text: loading web pages supporting concepts; type:dfn; url:loading-web-pages-supporting-concepts
@@ -421,6 +422,23 @@ Add step 6 and 7 to the [=create a policy container from a fetch response =]:
    isolation key=] to the result of [=obtain-coi-key|obtaining a cross-origin
    isolation key=] given *result*'s [=policy-container-dip|document isolation
    policy=] and *response*'s [=URL=]'s [=origin=].
+
+</div>
+
+Add step 3 to the [=initialize a worker global scope's policy container=]:
+
+<div class="monkey-patch">
+
+3. If *workerGlobalScope*'s [=owner set=]'s [=list-size|size=] is 1, then:
+   1. Set *workerGlobalScope*'s [=policy container=]'s
+      [=policy-container-dip|document isolation policy=] to *workerGlobalScope*'s
+      [=owner set=][0]'s [=relevant settings object=]'s [=policy container=]'s
+      [=policy-container-dip|document isolation policy=].
+   2. Set *workerGlobalScope*'s [=policy container=]'s
+      [=policy-container-coi-key|agent cluster cross-origin
+      isolation key=] to *workerGlobalScope*'s [=owner set=][0]'s [=relevant
+      settings object=]'s [=policy container=]'s
+      [=policy-container-coi-key|agent cluster cross-origin isolation key=].
 
 </div>
 
