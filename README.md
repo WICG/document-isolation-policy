@@ -55,6 +55,8 @@ This is the repository for Document-Isolation-Policy. You're welcome to
   - [Browsing context group switch instead of agent cluster keying](#browsing-context-group-switch-instead-of-agent-cluster-keying)
   - [Relying on COEP for the subresources checks](#relying-on-coep-for-the-subresources-checks)
   - [Restricting the ability to use Document-Isolation-Policy for cross-origin iframes](#restricting-the-ability-to-use-document-isolation-policy-for-cross-origin-iframes)
+- [Further work considered](#further-work-considered)
+  - [Reporting on same-origin frames with different Document Isolation Policy status](#reporting-on-same-origin-frames-with-different-document-isolation-policy-status)
 - [Stakeholder Feedback / Opposition](#stakeholder-feedback--opposition)
 - [References & acknowledgements](#references--acknowledgements)
 
@@ -322,7 +324,7 @@ Document-Isolation-Policy can apply checks on subresources that are similar to C
 Document-Isolation-Policy will be stored in the PolicyContainer and follow the regular inheritance model for policy inheritance (unlike COOP and COEP). The underlying process isolation ensures that documents with Document-Isolation-Policy only share their process with same-origin documents that are crossOriginIsolated. So any new document created by the DIP document in the same process should also be same-origin and crossOriginIsolated. The standard behavior for policy inheritance is to inherit the origin from the creator, and its security policies. In this case, the document would inherit its origin and Document-Isolation-Policy from its creator, making crossOriginIsolated.
 
 ### Interactions with workers
-Document-Isolation-State and the crossOriginIsolation status should be inherited from the creator of a DedicatedWorker or a SharedWorker.
+Document-Isolation-Policy and the crossOriginIsolation status are inherited from the creator of a DedicatedWorker or a SharedWorker.
 
 ServiceWorkers should honor the subresource checks mandated by Document-Isolation-Policy, just as they do for COEP. ServiceWorkers can also have a COEP of their own. There is no plan to do something similar for Document-Isolation-Policy. For ServiceWorkers, COEP is sufficient to enable crossOriginIsolation and there are no deployment concerns that Document-Isolation-Policy would fix. In fact, a Document-Isolation-Policy specific to ServiceWorkers would look exactly like COEP.
 
@@ -338,39 +340,9 @@ Example:
 Document-Isolation-Policy: isolate-agent-cluster;report-to="endpoint"
 Document-Isolation-Policy-Report-Only: isolate-agent-cluster;report-to="endpoint"
 ```
+Document Isolation Policy sends a report when a subresource load is blocked due to not having a CORP header. This is similar to COEP.
 
-The browser will send reports when it detects same-origin documents with a different crossOriginIsolationMode in the browsing context group. In report-only mode, the browser sends reports when it detects same-origin documents in the browsing context group that would have a different IsolationLevel if Document-Isolation-Policy was enforced. This allows the developer to know that those documents have lost/would lose DOM access to each other.
-
-When navigating to a document with Document-Isolation-Policy reporting enabled, the browser collects a list of all same-origin documents in the browsing context. Then, for each document:
-1. Check if the crossOriginIsolationMode of the navigating document matches the one of the existing document.
-2. If not:
-    1. If the navigating document’s DocumentIsolationPolicy has an endpoint, send a report to it.
-    2. If the existing document's DocumentIsolationPolicy has an endpoint, send a report to it.
-3. Compute the crossOriginIsolationMode that would be applied to the navigating document and the existing document if their report-only DocumentIsolationPolicy was applied. If they match do not send a report. Developers will often deploy a report-only policy on several frames before actually enforcing it. This avoids sending them spurious reports.
-4. Check the report-only crossOriginIsolationMode of the navigating document against the IsolationLevel of the existing document and vice versa. If any of the checks match, do not send a report.
-5. If there was no match using report-only policies:
-    1. If the navigating document’s report-only DocumentIsolationPolicy has an endpoint, send a report to it.
-    2. If the existing document's report-only DocumentIsolationPolicy has an endpoint, send a report to it.
-
-A report would contain the following:
-
-```
-{
-reportingDocumentUrl: URL,
-reportingDocumentCrossOriginIsolationMode: cross-origin-isolation-mode,
-reportingDocumentIsolationPolicy: document-isolation-policy value,
-otherDocumentUrl: URL,
-otherDocumentCrossOriginIsolationMode: cross-origin-isolation-mode,
-otherDocumentIsolationPolicy: document-isolation-policy value,
-enforcement: boolean,
-}
-```
-
-Because all the documents are same-origin with each other and in the same browsing context group, the report does not leak any kind of information. Should communication between same-origin frames in a browsing context group be limited due to 3PCD, we will limit the reports sent accordingly.
-
-While it would be ideal to warn about DOM accesses that would be blocked by Document-Isolation-Policy, this would impose too much of a performance cost. So reports will be limited to warning about potential issues between frames.
-
-For subresource checks, we will send reports similar to COEP require-corp and credentialless.
+Document Isolation Policy does not send worker script load blocked reports, unlike COEP. This is because Document Isolation Policy never blocks worker script load, but has the worker inherit Document Isolation Policy from its creator instead.
 
 ### How this solution would solve the use cases
 
@@ -464,6 +436,41 @@ Document-Isolation-Policy requires process isolation, which has a memory cost. I
 
 - we want to solve the use case of embedded widgets. Having their embedder be able to restrict the ability to use COI gated APIs is problematic, as this means that website developers have to maintain two versions of their widgets (with and without COI gated APIs), which is more costly and complex.
 - the problem of cross-origin iframes using too much memory is a more global one, and it's not clear this particular API should be restricted as opposed to the multitude of other APIs that also use memory.
+
+## Further work considered
+
+### Reporting on same-origin frames with different Document Isolation Policy status
+
+Document Isolation Policy puts same-origin documents into different agent clusters, which means that they lose synchronous DOM access to each other. While it would be ideal to warn about DOM accesses that would be blocked by Document-Isolation-Policy, this would impose too much of a performance cost. What we could do is warn developers that there are same-origin frames in the same browsing context group with a different Document Isolation Policy. We have not implemented this in the initial release as developers in the Origin Trial told us that they did not think it was useful, since it is not reporting actual breakage, just potential issues. Should developers still need it, we could do the following. 
+
+The browser would send reports when it detects same-origin documents with a different crossOriginIsolationMode in the browsing context group. In report-only mode, the browser sends reports when it detects same-origin documents in the browsing context group that would have a different IsolationLevel if Document-Isolation-Policy was enforced. This allows the developer to know that those documents have lost/would lose DOM access to each other.
+
+When navigating to a document with Document-Isolation-Policy reporting enabled, the browser collects a list of all same-origin documents in the browsing context. Then, for each document:
+1. Check if the crossOriginIsolationMode of the navigating document matches the one of the existing document.
+2. If not:
+    1. If the navigating document’s DocumentIsolationPolicy has an endpoint, send a report to it.
+    2. If the existing document's DocumentIsolationPolicy has an endpoint, send a report to it.
+3. Compute the crossOriginIsolationMode that would be applied to the navigating document and the existing document if their report-only DocumentIsolationPolicy was applied. If they match do not send a report. Developers will often deploy a report-only policy on several frames before actually enforcing it. This avoids sending them spurious reports.
+4. Check the report-only crossOriginIsolationMode of the navigating document against the IsolationLevel of the existing document and vice versa. If any of the checks match, do not send a report.
+5. If there was no match using report-only policies:
+    1. If the navigating document’s report-only DocumentIsolationPolicy has an endpoint, send a report to it.
+    2. If the existing document's report-only DocumentIsolationPolicy has an endpoint, send a report to it.
+
+A report would contain the following:
+
+```
+{
+reportingDocumentUrl: URL,
+reportingDocumentCrossOriginIsolationMode: cross-origin-isolation-mode,
+reportingDocumentIsolationPolicy: document-isolation-policy value,
+otherDocumentUrl: URL,
+otherDocumentCrossOriginIsolationMode: cross-origin-isolation-mode,
+otherDocumentIsolationPolicy: document-isolation-policy value,
+enforcement: boolean,
+}
+```
+
+Because all the documents are same-origin with each other and in the same browsing context group, the report does not leak any kind of information. Should communication between same-origin frames in a browsing context group be limited due to 3PCD, we will limit the reports sent accordingly.
 
 ## Stakeholder Feedback / Opposition
 
