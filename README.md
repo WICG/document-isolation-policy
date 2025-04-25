@@ -22,6 +22,7 @@ This is the repository for Document-Isolation-Policy. You're welcome to
   - [App with cross-origin popup](#app-with-cross-origin-popup)
   - [App with 3rd party iframe](#app-with-3rd-party-iframe)
   - [Embedded widget](#embedded-widget)
+- [Document-Isolation-Policy in a nutshell](#document-isolation-policy-in-a-nutshell)
 - [Background: Process wide XS-Leaks and the crossOriginIsolated model](#background-process-wide-xs-leaks-and-the-crossoriginisolated-model)
   - [Same-origin policy](#same-origin-policy)
   - [Process wide XS-Leaks](#process-wide-xs-leaks)
@@ -91,6 +92,21 @@ The user would like some of their compute heavy web apps to be faster (e.g. game
 ### Embedded widget
 
 The user would like some of the embedded widgets on the page they browse to be faster (e.g. photo library widget, map widget, video chat widget, ...). To make these widgets faster, relying on multithreading and shared memory is needed, but this means having access to SharedArrayBuffers. But access to SharedArrayBuffers is only possible if the embedder of the widget deploys crossOriginIsolation (with the constraints described in the previous use cases). So a widget embedded in a wide variety of websites cannot use shared memory to improve its performance.
+
+## Document-Isolation-Policy in a nutshell
+
+Document-Isolation-Policy is focused on preventing XS-Leaks attacks on authenticated cross-origin resources inside the process of an attacker. The most well-known of those is the Spectre attack, made worse by SharedArrayBuffers. The risks we are looking at are strictly limited to the process of the attacker, this is the key point on which the security model hinges.
+
+Basically, Document-Isolation-Policy divides the documents of a particular origin into two groups, the ones that have asked for isolation and the ones that haven't. And then, it prevents documents in two different groups to have synchronous script access to each other. This allows a browser to put them in different processes (provided the browser supports Out-Of-Process-Iframes), because the communication between those documents is entirely asynchronous and so they can live in different processes. With OOPIF backing, this means that we can have a process that contains only documents of a particular origin that requested isolation. So there is no risk of a Spectre attack from those documents on other cross-origin documents.
+
+Which leaves us with the question of cross-origin subresources. To make it safe, DocumentIsolationPolicy also imposes constraints on subresource loads. Since all documents in the process are same-origin, and isolated, subresources fall into one of theses buckets:
+* same-origin subresources, which are fine to load in the context.
+* cross-origin subresources loaded through CORS. It's fine to load them because CORS either allowlist the document origin to read their content (so no extra information gained through Spectre) or they are requested without credentials (an attacker could already request the uncredentialled resource by itself).
+* cross-origin subresources loaded without CORS. these are the subresources at risk. To protect them, we do exactly as with COEP. We have two modes: require-corp and credentialless. In require-corp mode, cross-origin resources are blocked from loading unless they have a CORP header (which is an opt-in to emebedding). In credentialless mode, all non-CORS cross-origin requests are made without credentials, which makes them uninteresting to an attacker.
+
+Now, there is always an argument that resources could be personalized due to the user's network position, but that is an existing risk of the crossOriginIsolationModel. To address it, Chrome has been looking at restrictions on private network access.
+
+So overall, as long as the browser uses Out-Of-Process iframes to isolate the documents with DocumentIsolationPolicy, DocumentIsolationPolicy allows to use crossOriginIsolation gated APIs without any security risk.
 
 ## Background: Process wide XS-Leaks and the crossOriginIsolated model
 
