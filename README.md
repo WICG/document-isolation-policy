@@ -102,7 +102,7 @@ Basically, Document-Isolation-Policy divides the documents of a particular origi
 Which leaves us with the question of cross-origin subresources. To make it safe, DocumentIsolationPolicy also imposes constraints on subresource loads. Since all documents in the process are same-origin, and isolated, subresources fall into one of theses buckets:
 * same-origin subresources, which are fine to load in the context.
 * cross-origin subresources loaded through CORS. It's fine to load them because CORS either allowlist the document origin to read their content (so no extra information gained through Spectre) or they are requested without credentials (an attacker could already request the uncredentialled resource by itself).
-* cross-origin subresources loaded without CORS. these are the subresources at risk. To protect them, we do exactly as with COEP. We have two modes: require-corp and credentialless. In require-corp mode, cross-origin resources are blocked from loading unless they have a CORP header (which is an opt-in to emebedding). In credentialless mode, all non-CORS cross-origin requests are made without credentials, which makes them uninteresting to an attacker.
+* cross-origin subresources loaded without CORS. these are the subresources at risk. To protect them, we do exactly as with COEP. We have two modes: require-corp and credentialless. In require-corp mode, cross-origin resources are blocked from loading unless they have a CORP header (which is an opt-in to embedding). In credentialless mode, all non-CORS cross-origin requests are made without credentials, which makes them uninteresting to an attacker.
 
 Now, there is always an argument that resources could be personalized due to the user's network position, but that is an existing risk of the crossOriginIsolationModel. To address it, Chrome has been looking at restrictions on private network access.
 
@@ -294,7 +294,7 @@ In this case, all top-level documents in the browsing context group have COEP an
 
 In this case, documents have an agent cluster key of `{document origin, {top-level origin, logical}}`. The top-level origin is guaranteed to be the same for all documents in the browsing context group due to COOP same-origin.
 
-If a document has a Document-Isolation-Policy of `isolate-and-require-corp` or `isolated-and-credentialless`, its agent cluster key will be `{document origin, {document origin, logical}}`. If the browser cannot support page-level isolation for COI, it certainly cannot support iframe isolation either.
+If a document has a Document-Isolation-Policy of `isolate-and-require-corp` or `isolate-and-credentialless`, its agent cluster key will be `{document origin, {document origin, logical}}`. If the browser cannot support page-level isolation for COI, it certainly cannot support iframe isolation either.
 
 *In this situation, no frame gets access to COI-gated APIs because the browser cannot support the underlying process isolation. The frame with Document-Isolation-Policy does have DOM access to the other same-origin frame.*
 
@@ -304,7 +304,7 @@ If a document has a Document-Isolation-Policy of `isolate-and-require-corp` or `
 
 In this case, all top-level documents in the browsing context group have COEP and COOP. This gives them access to COI-gated APIs, backed by process isolation of the browsing context group.
 
-In this case, documents have an agent cluster key of `{document origin, {top-level origin, cconcrete}}`. The top-level origin is guaranteed to be the same for all documents in the browsing context group due to COOP same-origin.
+In this case, documents have an agent cluster key of `{document origin, {top-level origin, concrete}}`. The top-level origin is guaranteed to be the same for all documents in the browsing context group due to COOP same-origin.
 
 If a document has a Document-Isolation-Policy of `isolate-and-require-corp` or `isolate-and-credentialless`, and the browser can support process isolation for the document, then its agent cluster key will be `{document origin, {document origin, crossOriginIsolation}}`. Note that this may happen in a credentialless iframe, and the document will also get access to COI in this case.
 
@@ -327,14 +327,14 @@ We believe that option 1 is the best again, due to consistency. The document wil
 ![Only page level COI suuported](/images/agent-cluster5.png)
 
 #### A note on SharedArrayBuffers and agent clusters
-SharedArrayBuffers can be passed to other execution contexts in the same agent clutser using postMessage. So Document-Isolation-Policy impacting agent clusters will also impact the ability to post SABs to other documents. In particular, it will not be possible to share a SAB from a crossOriginIsolated document to one that isn't, because they would not be in the same agent cluster. This is the case even if they are same-origin. We should probably update the error message developers get in that case, so that it mentions other factors beyond origin as the reason the SAB could not be posted.
+SharedArrayBuffers can be passed to other execution contexts in the same agent cluster using postMessage. So Document-Isolation-Policy impacting agent clusters will also impact the ability to post SABs to other documents. In particular, it will not be possible to share a SAB from a crossOriginIsolated document to one that isn't, because they would not be in the same agent cluster. This is the case even if they are same-origin. We should probably update the error message developers get in that case, so that it mentions other factors beyond origin as the reason the SAB could not be posted.
 
 ### Interaction with Fetch
 Document-Isolation-Policy can apply checks on subresources that are similar to COEP.
 
 `Document-Isolation-Policy: isolate-and-require-corp` requires cross-origin subresources not loaded through CORS to have a CORP header to be loaded. This is checked during the [CORP check](https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header) in Fetch. The existing check for COEP should be extended so that Document-Isolation-Policy is also taken into account.
 
-`Document-Isolation-Policy: credentialless` requires cross-origin subresource requests made without CORS to be loaded without credentials. We’ll extend the check in the [main Fetch algorithm](https://fetch.spec.whatwg.org/#http-network-or-cache-fetch) so that it also applies to Document-Isolation-policy and not just COEP credentialless.
+`Document-Isolation-Policy: isolate-and-credentialless` requires cross-origin subresource requests made without CORS to be loaded without credentials. We’ll extend the check in the [main Fetch algorithm](https://fetch.spec.whatwg.org/#http-network-or-cache-fetch) so that it also applies to Document-Isolation-policy and not just COEP credentialless.
 
 ### Inheritance
 Document-Isolation-Policy will be stored in the PolicyContainer and follow the regular inheritance model for policy inheritance (unlike COOP and COEP). The underlying process isolation ensures that documents with Document-Isolation-Policy only share their process with same-origin documents that are crossOriginIsolated. So any new document created by the DIP document in the same process should also be same-origin and crossOriginIsolated. The standard behavior for policy inheritance is to inherit the origin from the creator, and its security policies. In this case, the document would inherit its origin and Document-Isolation-Policy from its creator, making crossOriginIsolated.
@@ -353,8 +353,8 @@ We will provide reporting for Document-Isolation-Policy using the reporting API.
 Example:
 
 ```
-Document-Isolation-Policy: isolate-agent-cluster;report-to="endpoint"
-Document-Isolation-Policy-Report-Only: isolate-agent-cluster;report-to="endpoint"
+Document-Isolation-Policy: isolate-and-require-corp;report-to="endpoint"
+Document-Isolation-Policy-Report-Only: isolate-and-require-corp;report-to="endpoint"
 ```
 Document Isolation Policy sends a report when a subresource load is blocked due to not having a CORP header. This is similar to COEP.
 
@@ -364,17 +364,17 @@ Document Isolation Policy does not send worker script load blocked reports, unli
 
 #### App with cross-origin popup
 
-The app can deploy a Document-Isolation-Policy of `isolated-and-credentialless` or `isolated-and-require-corp` on its documents. It will gain access to COI gated APIs, while retaining communication with cross-origin popups. It can also deploy Document-Isolation-Policy just on documents that need COI-gated APIs, but those document would lose direct DOM access to the rest of the same-origin documents of the app.
+The app can deploy a Document-Isolation-Policy of `isolate-and-credentialless` or `isolate-and-require-corp` on its documents. It will gain access to COI gated APIs, while retaining communication with cross-origin popups. It can also deploy Document-Isolation-Policy just on documents that need COI-gated APIs, but those document would lose direct DOM access to the rest of the same-origin documents of the app.
 
 If the platform does not have enough resources to support process isolation of the documents, then the app does not gain access to COI gated APIs. However, our use case is a compute heavy app that needs multithreading for better performance. The platforms these kinds of app run on should have enough resources to support the required isolation.
 
 #### App with 3rd party iframe
 
-Exactly like in the app with cross-origin popup case, the app can deploy a Document-Isolation-Policy of `isolated-and-credentialless` or `isolated-and-require-corp` on its documents. If the platform can support the isolation, it will get access to COI gated APIs. In any case, there are no particular restrictions on embedding cross-origin iframes.
+Exactly like in the app with cross-origin popup case, the app can deploy a Document-Isolation-Policy of `isolate-and-credentialless` or `isolate-and-require-corp` on its documents. If the platform can support the isolation, it will get access to COI gated APIs. In any case, there are no particular restrictions on embedding cross-origin iframes.
 
 #### Embedded widget
 
-An embedded iframe can deploy a Document-Isolation-Policy of `isolated-and-credentialless` or `isolated-and-require-corp` and gain access to COI-gated APIs, as long as the platform can support the necessary isolation. This is regardless of whether its embedder deployed COI or not.
+An embedded iframe can deploy a Document-Isolation-Policy of `isolate-and-credentialless` or `isolate-and-require-corp` and gain access to COI-gated APIs, as long as the platform can support the necessary isolation. This is regardless of whether its embedder deployed COI or not.
 
 ## Considered alternatives
 
